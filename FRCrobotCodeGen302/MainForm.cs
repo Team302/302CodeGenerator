@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 using Configuration;
 
 namespace FRCrobotCodeGen302
@@ -92,6 +93,7 @@ namespace FRCrobotCodeGen302
             try
             {
                 generatorConfig = (toolConfiguration)generatorConfig.deserialize(configurationFullPathName);
+
             }
             catch (Exception ex)
             {
@@ -136,18 +138,87 @@ namespace FRCrobotCodeGen302
 
             writeStateMgr_h_File(fullPathFilename_h, mech, mechanismStateData, states, stateText);
             writeStateMgr_cpp_File(fullPathFilename_cpp, mech, mechanismStateData, states, stateText);
-            writeStateMgr_user_cpp_File(fullPathFilename_cpp, mech, mechanismStateData, states, stateText);
+            //writeStateMgr_user_cpp_File(fullPathFilename_cpp, mech, mechanismStateData, states, stateText);
+        }
+
+        /// <summary>
+        /// Keep in mind that the number of hand coded sections in the template might be different
+        /// than in the previous file
+        /// </summary>
+        /// <param name="previousContent"></param>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        private string copyHandCodedSections(string previousContent, string template)
+        {
+            string handCodedStart = @"//========= Hand modified code start section (\d+) ========";
+            string handCodedEnd   = @"//========= Hand modified code end section (\d+) ========";
+
+            string regex = handCodedStart + "([\\s\\S]*?)" + handCodedEnd;
+            Regex matchesInPreviousFile = new Regex(regex);
+            Regex matchesInTemplateFile = new Regex(regex);
+
+            MatchCollection previousFileMatches = matchesInPreviousFile.Matches(previousContent);
+            MatchCollection templateFileMatches = matchesInPreviousFile.Matches(template);
+
+            if (previousFileMatches.Count > 0)
+            {
+                int allGroupID = 0;
+                int sectionGroupID = 1;
+                //todo add code here to validate that the templates and the regex captures are correct
+
+                List<(int, string)> handCodedSections = new List<(int, string)>();
+                foreach (Match m in previousFileMatches)
+                {
+                    handCodedSections.Add((System.Convert.ToInt32(m.Groups[sectionGroupID].Value), m.Value));
+                }
+
+                //section ID, text start, text length, text
+                List<(int, int, int, string)> templateHandCodedSections = new List<(int, int, int, string)>();
+                foreach (Match m in templateFileMatches)
+                {
+                    templateHandCodedSections.Add(  (Convert.ToInt32(m.Groups[sectionGroupID].Value), 
+                                                    m.Groups[allGroupID].Index, m.Groups[allGroupID].Length,
+                                                    m.Value));
+                }
+
+                foreach((int, int, int, string) t in templateHandCodedSections.OrderByDescending(t => t.Item2))
+                {
+                    int sectionID = t.Item1;
+                    int startIndex = t.Item2;
+                    int length = t.Item3;
+
+                    (int, string) handCode = handCodedSections.Find(c => c.Item1 == sectionID);
+                    if (handCode != (0,null))
+                        template = template.Remove(startIndex, length).Insert(startIndex, handCode.Item2);
+                }
+            }
+
+            return template;
+        }
+
+        StringBuilder prepareFile(string fullPathFilename, string template)
+        {
+            StringBuilder sb = new StringBuilder();
+            String updatedFileContents = template;
+
+            if (File.Exists(fullPathFilename))
+            {
+                string oldContent = File.ReadAllText(fullPathFilename);
+                updatedFileContents = copyHandCodedSections(oldContent, template);
+
+                File.Delete(fullPathFilename);
+            }
+
+            sb.AppendLine(updatedFileContents);
+
+            return sb;
         }
 
         private void writeStateMgr_h_File(string fullPathFilename, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            if (File.Exists(fullPathFilename))
-                File.Delete(fullPathFilename);
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(generatorConfig.stateManager_h);
+            StringBuilder sb = prepareFile( fullPathFilename, generatorConfig.stateManager_h);
 
             StringBuilder enumContentsStr = new StringBuilder();
             StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
@@ -176,36 +247,7 @@ namespace FRCrobotCodeGen302
         {
             addProgress("Generating " + fullPathFilename);
 
-            if (File.Exists(fullPathFilename))
-                File.Delete(fullPathFilename);
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(generatorConfig.stateManager_cpp);
-
-            StringBuilder stateStructStr = new StringBuilder();
-            for (int i = 0; i < states.Count; i++)
-            {
-                stateStructStr.AppendFormat("stateMap[\"{0}\"] = m_{1}State;\r\n",
-                    stateText[i],
-                    states[i].ToLower());
-            }
-
-            sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
-            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
-            sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
-            sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
-
-        private void writeStateMgr_user_cpp_File(string fullPathFilename, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
-        {
-            addProgress("Generating " + fullPathFilename);
-
-            if (File.Exists(fullPathFilename))
-                File.Delete(fullPathFilename);
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(generatorConfig.stateManager_user_cpp);
+            StringBuilder sb = prepareFile(fullPathFilename, generatorConfig.stateManager_cpp);
 
             StringBuilder stateStructStr = new StringBuilder();
             for (int i = 0; i < states.Count; i++)
