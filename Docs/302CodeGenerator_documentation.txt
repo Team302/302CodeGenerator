@@ -30,4 +30,17 @@ How to create / regenerate the C# classes corresponding to the XSD files (Do thi
 	3) Execute generateRobotClasses.bat
 		-> the .cs files will be generated in the folder FRCrobotCodeGen302
 
+Notes
+	The following marks the start of a hand coded portion:
+		//========= Hand modified code start section x ======== 
+
+	The following marks the end of a hand coded portion:
+		//========= Hand modified code end section x ========
+		
+	Rules
+		1) In a particular template, the section IDs must be unique.	
+		2) Hand modified delimeters cannot be nested
+		
+	When generating code, the code between the start and end delimiters will be copied and then restored	
+
 		
