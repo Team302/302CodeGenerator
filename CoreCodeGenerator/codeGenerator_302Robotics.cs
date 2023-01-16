@@ -8,33 +8,22 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Configuration;
+using robotConfiguration;
 
 namespace CoreCodeGenerator
 {
-    public class codeGenerator_302Robotics
+    public class codeGenerator_302Robotics : baseReportingClass
     {
-        toolConfiguration generatorConfig = new toolConfiguration();
-        public delegate void showMessage(string message);
+        private robotConfig theRobotConfiguration = new robotConfig();
 
-        showMessage progressCallback;
-
-        public toolConfiguration config 
-        { 
-            get { return generatorConfig; } 
-            private set { } 
-        }
-
-        public void setProgressCallback(showMessage callback)
+        public void generate(robotConfig theRobotConfig, toolConfiguration generatorConfig)
         {
-            progressCallback = callback;
-        }
-        public void generate()
-        {
+            theRobotConfiguration = theRobotConfig;
+            
             string rootFolder = Path.Combine(generatorConfig.rootOutputFolder, "output");
             string rootRobotConfigFolder = Path.GetDirectoryName(generatorConfig.robotConfiguration);
 
             addProgress("Output will be placed at " + rootFolder);
-            addProgress("Robot configuration is " + generatorConfig.robotConfiguration);
 
             if (!Directory.Exists(rootFolder))
             {
@@ -46,56 +35,16 @@ namespace CoreCodeGenerator
                 addProgress("Output directory " + rootFolder + " already exists");
             }
 
-            addProgress("Loading robot configuration " + generatorConfig.robotConfiguration);
-            robot myRobot = loadRobotConfiguration(generatorConfig.robotConfiguration);
-
             addProgress("Writing mechanism files...");
-            foreach (mechanism mech in myRobot.mechanism)
+            foreach (mechanism mech in theRobotConfiguration.theRobot.mechanism)
             {
-                string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+                statedata sd = theRobotConfiguration.mechanismControlDefinition[mech.controlFile];
 
-                addProgress("======== Loading mechanism configuration " + mechanismConfig);
-                statedata sd = loadStateDataConfiguration(mechanismConfig);
-
-                writeMechanismFiles(rootFolder, mech, sd);
+                writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
             }
         }
 
-        void addProgress(string info)
-        {
-            progressCallback(info);
-        }
-
-        robot loadRobotConfiguration(string fullPathName)
-        {
-            var mySerializer = new XmlSerializer(typeof(robot));
-            using (var myFileStream = new FileStream(fullPathName, FileMode.Open))
-            {
-                return (robot)mySerializer.Deserialize(myFileStream);
-            }
-        }
-        statedata loadStateDataConfiguration(string fullPathName)
-        {
-            var mySerializer = new XmlSerializer(typeof(statedata));
-            using (var myFileStream = new FileStream(fullPathName, FileMode.Open))
-            {
-                return (statedata)mySerializer.Deserialize(myFileStream);
-            }
-        }
-
-        public void loadGeneratorConfig(string configurationFullPathName)
-        {
-            try
-            {
-                generatorConfig = (toolConfiguration)generatorConfig.deserialize(configurationFullPathName);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Cannot load the generator configuration. " + ex.Message);
-            }
-        }
-
-        private void writeMechanismFiles(string baseFolder, mechanism mech, statedata mechanismStateData)
+        private void writeMechanismFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string mechanismFolder = Path.Combine(baseFolder, getMechanismName(mech.controlFile));
 
@@ -107,7 +56,7 @@ namespace CoreCodeGenerator
             else
                 addProgress("Output directory " + mechanismFolder + " already exists");
 
-            writeStateMgrFiles(mechanismFolder, mech, mechanismStateData);
+            writeStateMgrFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
         }
 
         private string getMechanismName(string controlFileName)
@@ -115,7 +64,7 @@ namespace CoreCodeGenerator
             return Path.GetFileNameWithoutExtension(controlFileName);
         }
 
-        private void writeStateMgrFiles(string baseFolder, mechanism mech, statedata mechanismStateData)
+        private void writeStateMgrFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "StateMgr");
             string fullPathFilename_h = baseFileName + ".h";
@@ -130,8 +79,8 @@ namespace CoreCodeGenerator
                 stateText.Add(mt.stateIdentifier.ToString());
             }
 
-            writeStateMgr_h_File(fullPathFilename_h, mech, mechanismStateData, states, stateText);
-            writeStateMgr_cpp_File(fullPathFilename_cpp, mech, mechanismStateData, states, stateText);
+            writeStateMgr_h_File(fullPathFilename_h, generatorConfig.stateManager_h, mech, mechanismStateData, states, stateText);
+            writeStateMgr_cpp_File(fullPathFilename_cpp, generatorConfig.stateManager_cpp, mech, mechanismStateData, states, stateText);
         }
 
         /// <summary>
@@ -207,11 +156,11 @@ namespace CoreCodeGenerator
             return sb;
         }
 
-        private void writeStateMgr_h_File(string fullPathFilename, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        private void writeStateMgr_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, generatorConfig.stateManager_h);
+            StringBuilder sb = prepareFile(fullPathFilename, template);
 
             StringBuilder enumContentsStr = new StringBuilder();
             StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
@@ -236,11 +185,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeStateMgr_cpp_File(string fullPathFilename, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        private void writeStateMgr_cpp_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, generatorConfig.stateManager_cpp);
+            StringBuilder sb = prepareFile(fullPathFilename, template);
 
             StringBuilder stateStructStr = new StringBuilder();
             for (int i = 0; i < states.Count; i++)

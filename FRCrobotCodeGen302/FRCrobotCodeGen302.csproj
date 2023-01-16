@@ -88,6 +88,10 @@
       <Project>{d8726625-5dbc-46e6-a6bc-816e6c9c3469}</Project>
       <Name>CoreCodeGenerator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\robotConfiguration\robotConfiguration.csproj">
+      <Project>{301cab4c-ff29-4111-8d59-b4e69f485bd8}</Project>
+      <Name>robotConfiguration</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
