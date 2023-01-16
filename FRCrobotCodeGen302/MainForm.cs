@@ -12,17 +12,22 @@ using System.Xml.Serialization;
 using System.Text.RegularExpressions;
 using Configuration;
 using CoreCodeGenerator;
+using robotConfiguration;
+using System.Reflection;
 
 namespace FRCrobotCodeGen302
 {
     public partial class MainForm : Form
     {
+        toolConfiguration generatorConfig = new toolConfiguration();
+        robotConfig theRobotConfiguration = new robotConfig();
         codeGenerator_302Robotics codeGenerator = new codeGenerator_302Robotics();
 
         public MainForm()
         {
             InitializeComponent();
             codeGenerator.setProgressCallback(addProgress);
+            theRobotConfiguration.setProgressCallback(addProgress);
         }
 
         private void addProgress(string info)
@@ -30,15 +35,65 @@ namespace FRCrobotCodeGen302
             progressTextBox.AppendText(info + "\r\n");
         }
 
+        private void populateTree(robotConfig myRobot)
+        {
+            robotTreeView.Nodes.Clear();
+
+            TreeNode robotNode = robotTreeView.Nodes.Add("Robot");
+
+            Type robotType = myRobot.theRobot.GetType();
+            FieldInfo[] fields = robotType.GetFields();
+            MemberInfo[] mems = robotType.GetMembers();
+            TypeAttributes ta =  robotType.Attributes;
+
+            foreach(PropertyInfo pi in robotType.GetProperties())
+            {
+                object obj = pi.GetValue(myRobot.theRobot);
+                TreeNode tn = robotNode.Nodes.Add(pi.PropertyType.Name);
+                tn.Tag = obj;
+
+                Type t = pi.PropertyType;
+                if (t.IsArray)
+                {
+                    Array objArray = pi.GetValue(myRobot.theRobot) as Array;
+                    if (objArray != null)
+                    {
+                        if (objArray.Length > 0)
+                        {
+                            int index = 0;
+                            foreach (var v in objArray)
+                            {
+                                TreeNode n = tn.Nodes.Add(v.GetType().ToString() + index);
+                                n.Tag = v;
+                                index++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //foreach (mechanism m in myRobot.theRobot.mechanism)
+            //{
+            //    TreeNode n = robotTreeView.Nodes.Add("hej");
+            //    n.Nodes.Add("sdjs");
+            //}
+        }
+        public void loadGeneratorConfig(string configurationFullPathName)
+        {
+            try
+            {
+                generatorConfig = (toolConfiguration)generatorConfig.deserialize(configurationFullPathName);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Cannot load the generator configuration. " + ex.Message);
+            }
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             try
             {
-                addProgress("Loading the generator configuration file " + configurationFilePathNameTextBox.Text);
-                codeGenerator.loadGeneratorConfig(configurationFilePathNameTextBox.Text);
-                addProgress("Configuration file loaded.");
-
-                codeGenerator.generate();
+                codeGenerator.generate(theRobotConfiguration,generatorConfig);
             }
             catch(Exception ex)
             {
@@ -74,11 +129,26 @@ namespace FRCrobotCodeGen302
                 {
                     configurationFilePathNameTextBox.Text = dlg.FileName;
 
-                    codeGenerator.loadGeneratorConfig(configurationFilePathNameTextBox.Text);
-                    configuredOutputFolderLabel.Text = codeGenerator.config.rootOutputFolder;
-                    robotConfigurationFileLabel.Text = codeGenerator.config.robotConfiguration;
+                    addProgress("Loading the generator configuration file " + configurationFilePathNameTextBox.Text);
+                    loadGeneratorConfig(configurationFilePathNameTextBox.Text);
+                    addProgress("Configuration file loaded.");
+
+                    theRobotConfiguration.load(generatorConfig.robotConfiguration);
+
+                    addProgress("Populating the robot configuration tree view.");
+                    populateTree(theRobotConfiguration);
+                    addProgress("... Tree view populated.");
+
+                    configuredOutputFolderLabel.Text = generatorConfig.rootOutputFolder;
+                    robotConfigurationFileLabel.Text = generatorConfig.robotConfiguration;
                 }
             }
+        }
+
+        private void robotTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Tag != null)
+                MessageBox.Show(e.Node.Tag.GetType().ToString());
         }
     }
 }
