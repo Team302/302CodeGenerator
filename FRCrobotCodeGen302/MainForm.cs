@@ -35,42 +35,95 @@ namespace FRCrobotCodeGen302
             progressTextBox.AppendText(info + "\r\n");
         }
 
-        private void populateTree(robotConfig myRobot)
+        private void AddNode(TreeNode parent, object obj, string nodeName)
         {
-            robotTreeView.Nodes.Clear();
+            // add this object to the tree
+            Type objType = obj.GetType();
+            PropertyInfo thePropertyInfo = objType.GetProperties().ToList().Find(p => p.Name == "usage");
+            
+            if (thePropertyInfo != null)
+                nodeName += "_" + thePropertyInfo.GetValue(obj);
 
-            TreeNode robotNode = robotTreeView.Nodes.Add("Robot");
+            TreeNode tn = parent.Nodes.Add(nodeName);
+            tn.Tag = obj;
 
-            Type robotType = myRobot.theRobot.GetType();
-            FieldInfo[] fields = robotType.GetFields();
-            MemberInfo[] mems = robotType.GetMembers();
-            TypeAttributes ta =  robotType.Attributes;
-
-            foreach(PropertyInfo pi in robotType.GetProperties())
+            // if it is an array, add an entry for each item
+            if (objType.IsArray)
             {
-                object obj = pi.GetValue(myRobot.theRobot);
-                TreeNode tn = robotNode.Nodes.Add(pi.PropertyType.Name);
-                tn.Tag = obj;
-
-                Type t = pi.PropertyType;
-                if (t.IsArray)
+                Array a = (Array)obj;
+                if (a.Length > 0)
                 {
-                    Array objArray = pi.GetValue(myRobot.theRobot) as Array;
-                    if (objArray != null)
+                    int index = 0;
+                    foreach (var v in a)
                     {
-                        if (objArray.Length > 0)
+                        AddNode(tn, v, v.GetType().ToString() + index);
+
+                        index++;
+                    }
+                }
+            }
+            else
+            {
+                if (objType.FullName != "System.String")
+                {
+                    // add its children
+                    foreach (PropertyInfo pi in objType.GetProperties())
+                    {
+                        object theObj = pi.GetValue(obj);
+
+                        if (theObj != null)
                         {
-                            int index = 0;
-                            foreach (var v in objArray)
-                            {
-                                TreeNode n = tn.Nodes.Add(v.GetType().ToString() + index);
-                                n.Tag = v;
-                                index++;
-                            }
+                            AddNode(tn, theObj, pi.Name);
                         }
                     }
                 }
             }
+        }
+
+        private void populateTree(robotConfig myRobot)
+        {
+            robotTreeView.Nodes.Clear();
+
+            TreeNode robotNode = robotTreeView.Nodes.Add("Root");
+
+            
+            AddNode(robotNode, myRobot.theRobot, "Robot");
+
+            //Type robotType = myRobot.theRobot.GetType();
+            //FieldInfo[] fields = robotType.GetFields();
+            //MemberInfo[] mems = robotType.GetMembers();
+            //TypeAttributes ta =  robotType.Attributes;
+
+            //foreach(PropertyInfo pi in robotType.GetProperties())
+            //{
+            //    object obj = pi.GetValue(myRobot.theRobot);
+            //    TreeNode tn = robotNode.Nodes.Add(pi.PropertyType.Name);
+            //    tn.Tag = obj;
+
+            //    Type t = pi.PropertyType;
+            //    if (t.IsArray)
+            //    {
+            //        Array objArray = pi.GetValue(myRobot.theRobot) as Array;
+            //        if (objArray != null)
+            //        {
+            //            if (objArray.Length > 0)
+            //            {
+            //                int index = 0;
+            //                foreach (var v in objArray)
+            //                {
+            //                    TreeNode n = tn.Nodes.Add(v.GetType().ToString() + index);
+            //                    n.Tag = v;
+            //                    index++;
+
+            //                    foreach (PropertyInfo pii in v.GetType().GetProperties())
+            //                    {
+            //                        n.Nodes.Add(pii.Name);
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             //foreach (mechanism m in myRobot.theRobot.mechanism)
             //{

@@ -44,10 +44,14 @@ namespace FRCrobotCodeGen302
             this.tabMainPage = new System.Windows.Forms.TabPage();
             this.tabConfigurationPage = new System.Windows.Forms.TabPage();
             this.robotTreeView = new System.Windows.Forms.TreeView();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.configurationGroupBox.SuspendLayout();
             this.theTabControl.SuspendLayout();
             this.tabMainPage.SuspendLayout();
             this.tabConfigurationPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -209,7 +213,7 @@ namespace FRCrobotCodeGen302
             // 
             // tabConfigurationPage
             // 
-            this.tabConfigurationPage.Controls.Add(this.robotTreeView);
+            this.tabConfigurationPage.Controls.Add(this.splitContainer1);
             this.tabConfigurationPage.Location = new System.Drawing.Point(4, 29);
             this.tabConfigurationPage.Name = "tabConfigurationPage";
             this.tabConfigurationPage.Padding = new System.Windows.Forms.Padding(3);
@@ -220,13 +224,25 @@ namespace FRCrobotCodeGen302
             // 
             // robotTreeView
             // 
-            this.robotTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.robotTreeView.Location = new System.Drawing.Point(8, 6);
+            this.robotTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.robotTreeView.Location = new System.Drawing.Point(0, 0);
             this.robotTreeView.Name = "robotTreeView";
-            this.robotTreeView.Size = new System.Drawing.Size(328, 448);
+            this.robotTreeView.Size = new System.Drawing.Size(413, 456);
             this.robotTreeView.TabIndex = 0;
             this.robotTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.robotTreeView_AfterSelect);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(3, 3);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.robotTreeView);
+            this.splitContainer1.Size = new System.Drawing.Size(872, 456);
+            this.splitContainer1.SplitterDistance = 413;
+            this.splitContainer1.TabIndex = 1;
             // 
             // MainForm
             // 
@@ -242,6 +258,9 @@ namespace FRCrobotCodeGen302
             this.tabMainPage.ResumeLayout(false);
             this.tabMainPage.PerformLayout();
             this.tabConfigurationPage.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -263,6 +282,7 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.TabPage tabMainPage;
         private System.Windows.Forms.TabPage tabConfigurationPage;
         private System.Windows.Forms.TreeView robotTreeView;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 
