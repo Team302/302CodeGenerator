@@ -17,6 +17,12 @@ namespace Configuration
         public string stateManager_h = "";
         public string stateManager_cpp = "";
 
+        public string state_h = "";
+        public string state_cpp = "";
+
+        public string main_h = "";
+        public string main_cpp = "";
+
         public void loadDummyData()
         {
         }
