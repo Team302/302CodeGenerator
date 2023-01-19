@@ -23,6 +23,18 @@ namespace Configuration
         public string main_h = "";
         public string main_cpp = "";
 
+        public string SolenoidUsage_h = "";
+        public string SolenoidUSage_cpp = "";
+
+        public string MotorControllerUsage_h = "";
+        public string MotorControllerUsage_cpp = "";
+
+        public string DigitalInputUsage_h = "";
+        public string DigitalInputUsage_cpp = "";
+
+        public string ServoUsage_h = "";
+        public string ServoUsage_cpp = "";
+
         public void loadDummyData()
         {
         }
