@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 
@@ -32,6 +33,32 @@ namespace robotConfiguration
             }
         }
 
+        public void save(string theRobotConfigFullPathFileName)
+        {
+            string rootRobotConfigFolder = Path.GetDirectoryName(theRobotConfigFullPathFileName);
+
+            addProgress("Saving robot configuration " + theRobotConfigFullPathFileName);
+            saveRobotConfiguration(theRobotConfigFullPathFileName);
+
+            addProgress("Saving state data files...");
+            foreach(KeyValuePair<string, statedata> kvp in mechanismControlDefinition)
+            {
+                string path = Path.GetDirectoryName(theRobotConfigFullPathFileName);
+                path = Path.Combine(path, "states", kvp.Key);
+                saveStateDataConfiguration(path, kvp.Value);
+            }
+
+            mechanismControlDefinition = new Dictionary<string, statedata>();
+            foreach (mechanism mech in theRobot.mechanism)
+            {
+                string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+
+                addProgress("======== Loading mechanism configuration " + mechanismConfig);
+                statedata sd = loadStateDataConfiguration(mechanismConfig);
+                mechanismControlDefinition.Add(mech.controlFile, sd);
+            }
+        }
+
         robot loadRobotConfiguration(string fullPathName)
         {
             var mySerializer = new XmlSerializer(typeof(robot));
@@ -40,12 +67,32 @@ namespace robotConfiguration
                 return (robot)mySerializer.Deserialize(myFileStream);
             }
         }
+
+        void saveRobotConfiguration(string fullPathName)
+        {
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+            xmlWriterSettings.NewLineOnAttributes = true;
+            xmlWriterSettings.Indent = true;
+
+            var mySerializer = new XmlSerializer(typeof(robot));
+            XmlWriter tw = XmlWriter.Create(fullPathName, xmlWriterSettings);
+            mySerializer.Serialize(tw, theRobot);
+        }
+
         statedata loadStateDataConfiguration(string fullPathName)
         {
             var mySerializer = new XmlSerializer(typeof(statedata));
             using (var myFileStream = new FileStream(fullPathName, FileMode.Open))
             {
                 return (statedata)mySerializer.Deserialize(myFileStream);
+            }
+        }
+        void saveStateDataConfiguration(string fullPathName, statedata obj)
+        {
+            var mySerializer = new XmlSerializer(typeof(statedata));
+            using (var myFileStream = new FileStream(fullPathName, FileMode.Create))
+            {
+                mySerializer.Serialize(myFileStream, obj);
             }
         }
     }

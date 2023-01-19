@@ -43,15 +43,21 @@ namespace FRCrobotCodeGen302
             this.theTabControl = new System.Windows.Forms.TabControl();
             this.tabMainPage = new System.Windows.Forms.TabPage();
             this.tabConfigurationPage = new System.Windows.Forms.TabPage();
-            this.robotTreeView = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.robotTreeView = new System.Windows.Forms.TreeView();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.saveConfigBbutton = new System.Windows.Forms.Button();
+            this.valueComboBox = new System.Windows.Forms.ComboBox();
+            this.valueTextBox = new System.Windows.Forms.TextBox();
             this.configurationGroupBox.SuspendLayout();
             this.theTabControl.SuspendLayout();
             this.tabMainPage.SuspendLayout();
             this.tabConfigurationPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -222,15 +228,6 @@ namespace FRCrobotCodeGen302
             this.tabConfigurationPage.Text = "Configuration";
             this.tabConfigurationPage.UseVisualStyleBackColor = true;
             // 
-            // robotTreeView
-            // 
-            this.robotTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.robotTreeView.Location = new System.Drawing.Point(0, 0);
-            this.robotTreeView.Name = "robotTreeView";
-            this.robotTreeView.Size = new System.Drawing.Size(413, 456);
-            this.robotTreeView.TabIndex = 0;
-            this.robotTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.robotTreeView_AfterSelect);
-            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -240,9 +237,66 @@ namespace FRCrobotCodeGen302
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.robotTreeView);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Size = new System.Drawing.Size(872, 456);
-            this.splitContainer1.SplitterDistance = 413;
+            this.splitContainer1.SplitterDistance = 305;
             this.splitContainer1.TabIndex = 1;
+            // 
+            // robotTreeView
+            // 
+            this.robotTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.robotTreeView.Location = new System.Drawing.Point(0, 0);
+            this.robotTreeView.Name = "robotTreeView";
+            this.robotTreeView.Size = new System.Drawing.Size(305, 456);
+            this.robotTreeView.TabIndex = 0;
+            this.robotTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.robotTreeView_AfterSelect);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.saveConfigBbutton);
+            this.panel1.Controls.Add(this.valueComboBox);
+            this.panel1.Controls.Add(this.valueTextBox);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(563, 456);
+            this.panel1.TabIndex = 2;
+            // 
+            // saveConfigBbutton
+            // 
+            this.saveConfigBbutton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveConfigBbutton.Location = new System.Drawing.Point(153, 233);
+            this.saveConfigBbutton.Name = "saveConfigBbutton";
+            this.saveConfigBbutton.Size = new System.Drawing.Size(103, 37);
+            this.saveConfigBbutton.TabIndex = 2;
+            this.saveConfigBbutton.Text = "Save";
+            this.saveConfigBbutton.UseVisualStyleBackColor = true;
+            this.saveConfigBbutton.Click += new System.EventHandler(this.saveConfigBbutton_Click);
+            // 
+            // valueComboBox
+            // 
+            this.valueComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.valueComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.valueComboBox.FormattingEnabled = true;
+            this.valueComboBox.Location = new System.Drawing.Point(26, 70);
+            this.valueComboBox.Name = "valueComboBox";
+            this.valueComboBox.Size = new System.Drawing.Size(230, 28);
+            this.valueComboBox.TabIndex = 1;
+            this.valueComboBox.SelectedValueChanged += new System.EventHandler(this.valueComboBox_SelectedValueChanged);
+            // 
+            // valueTextBox
+            // 
+            this.valueTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.valueTextBox.Location = new System.Drawing.Point(26, 28);
+            this.valueTextBox.Name = "valueTextBox";
+            this.valueTextBox.Size = new System.Drawing.Size(230, 26);
+            this.valueTextBox.TabIndex = 0;
+            this.valueTextBox.TextChanged += new System.EventHandler(this.valueTextBox_TextChanged);
             // 
             // MainForm
             // 
@@ -259,8 +313,11 @@ namespace FRCrobotCodeGen302
             this.tabMainPage.PerformLayout();
             this.tabConfigurationPage.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -283,6 +340,10 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.TabPage tabConfigurationPage;
         private System.Windows.Forms.TreeView robotTreeView;
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.ComboBox valueComboBox;
+        private System.Windows.Forms.TextBox valueTextBox;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button saveConfigBbutton;
     }
 }
 
