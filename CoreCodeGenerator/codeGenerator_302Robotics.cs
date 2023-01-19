@@ -42,11 +42,12 @@ namespace CoreCodeGenerator
 
                 writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
             }
+            writeUsagesFiles(rootFolder, generatorConfig);
         }
 
         private void writeMechanismFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
-            string mechanismFolder = Path.Combine(baseFolder, getMechanismName(mech.controlFile));
+            string mechanismFolder = Path.Combine(baseFolder, "mechinisms", getMechanismName(mech.controlFile));
 
             if (!Directory.Exists(mechanismFolder))
             {
@@ -57,6 +58,28 @@ namespace CoreCodeGenerator
                 addProgress("Output directory " + mechanismFolder + " already exists");
 
             writeStateMgrFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
+            writeStateFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
+            writeMainFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
+            
+        }
+
+        private void writeUsagesFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string OutFolder = Path.Combine(baseFolder, "hw", "usages");
+
+            if (!Directory.Exists(OutFolder))
+            {
+                addProgress("Creating folder " + OutFolder);
+                Directory.CreateDirectory(OutFolder);
+            }
+            else
+                addProgress("Output directory " + OutFolder + " already exists");
+
+            
+            writeSolenoidUsageFiles(OutFolder, generatorConfig);
+            writeMotorControllerUsageFiles(OutFolder, generatorConfig);
+            writeDigitalInputUsageFiles(OutFolder, generatorConfig);
+            writeServoUsageFiles(OutFolder, generatorConfig);
         }
 
         private string getMechanismName(string controlFileName)
@@ -81,6 +104,91 @@ namespace CoreCodeGenerator
 
             writeStateMgr_h_File(fullPathFilename_h, generatorConfig.stateManager_h, mech, mechanismStateData, states, stateText);
             writeStateMgr_cpp_File(fullPathFilename_cpp, generatorConfig.stateManager_cpp, mech, mechanismStateData, states, stateText);
+        }
+
+        private void writeStateFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
+        {
+            string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "State");
+            string fullPathFilename_h = baseFileName + ".h";
+            string fullPathFilename_cpp = baseFileName + ".cpp";
+
+            List<string> states = new List<string>();
+            List<string> stateText = new List<string>();
+            foreach (mechanismTarget mt in mechanismStateData.mechanismTarget)
+            {
+                states.Add(getStateNameFromText(getMechanismName(mech.controlFile), mt.stateIdentifier.ToString()));
+                stateText.Add(mt.stateIdentifier.ToString());
+            }
+            writeState_h_File(fullPathFilename_h, generatorConfig.state_h, mech, mechanismStateData, states, stateText);
+            writeState_cpp_File(fullPathFilename_cpp, generatorConfig.state_cpp, mech, mechanismStateData, states, stateText);
+        }
+
+        private void writeMainFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
+        {
+            string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "Main");
+            string fullPathFilename_h = baseFileName + ".h";
+            string fullPathFilename_cpp = baseFileName + ".cpp";
+
+            List<string> states = new List<string>();
+            List<string> stateText = new List<string>();
+            foreach (mechanismTarget mt in mechanismStateData.mechanismTarget)
+            {
+                states.Add(getStateNameFromText(getMechanismName(mech.controlFile), mt.stateIdentifier.ToString()));
+                stateText.Add(mt.stateIdentifier.ToString());
+            }
+            writeMain_h_File(fullPathFilename_h, generatorConfig.main_h, mech, mechanismStateData, states, stateText);
+            writeMain_cpp_File(fullPathFilename_cpp, generatorConfig.main_cpp, mech, mechanismStateData, states, stateText);
+        }
+
+        private void writeSolenoidUsageFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string baseFileName = Path.Combine(baseFolder, "SolenoidUsage");
+            string fullPathFilename_h = baseFileName + ".h";
+            string fullPathFilename_cpp = baseFileName + ".cpp";
+
+            List<string> states = new List<string>();
+            List<string> stateText = new List<string>();
+        
+            writeSolenoidUsage_h_File(fullPathFilename_h, generatorConfig.SolenoidUsage_h);
+            writeSolenoidUsage_cpp_File(fullPathFilename_cpp, generatorConfig.SolenoidUsage_cpp);
+        }
+
+        private void writeMotorControllerUsageFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string baseFileName = Path.Combine(baseFolder, "MotorController");
+            string fullPathFilename_h = baseFileName + ".h";
+            string fullPathFilename_cpp = baseFileName + ".cpp";
+
+            List<string> states = new List<string>();
+            List<string> stateText = new List<string>();
+            
+            writeMotorControllerUsage_h_File(fullPathFilename_h, generatorConfig.MotorControllerUsage_h);
+            writeMotorControllerUsage_cpp_File(fullPathFilename_cpp, generatorConfig.MotorControllerUsage_cpp);
+        }
+
+        private void writeDigitalInputUsageFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string baseFileName = Path.Combine(baseFolder, "DigitalInputUsage");
+            string fullPathFilename_h = baseFileName + ".h";
+            string fullPathFilename_cpp = baseFileName + ".cpp";
+
+            List<string> states = new List<string>();
+            List<string> stateText = new List<string>();
+         
+            writeDigitalInputUsage_h_File(fullPathFilename_h, generatorConfig.DigitalInputUsage_h);
+            writeDigitalInputUsage_cpp_File(fullPathFilename_cpp, generatorConfig.DigitalInputUsage_cpp);
+        }
+
+        private void writeServoUsageFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string baseFileName = Path.Combine(baseFolder, "ServoUsage");
+            string fullPathFilename_h = baseFileName + ".h";
+            string fullPathFilename_cpp = baseFileName + ".cpp";
+
+            List<string> states = new List<string>();
+            List<string> stateText = new List<string>();
+            writeServoUsage_h_File(fullPathFilename_h, generatorConfig.ServoUsage_h);
+            writeServoUsage_cpp_File(fullPathFilename_cpp, generatorConfig.ServoUsage_cpp);
         }
 
         /// <summary>
@@ -203,6 +311,234 @@ namespace CoreCodeGenerator
             sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeState_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+            for (int i = 0; i < states.Count; i++)
+            {
+                enumContentsStr.AppendFormat("{0},\r\n", states[i]);
+                XmlStringToStateEnumMapStr.AppendFormat("\"{0}\", {1}_STATE::{2},\r\n", stateText[i], getMechanismName(mech.controlFile).ToUpper(), states[i]);
+                stateStructStr.AppendFormat("const StateStruc m_{2}State = {{ {0}_STATE::{3}, \"{1}\", StateType::{0}_STATE, true }};\r\n",
+                    getMechanismName(mech.controlFile).ToUpper(),
+                    stateText[i],
+                    states[i].ToLower(),
+                    states[i].ToUpper());
+            }
+
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
+            sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeState_cpp_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder stateStructStr = new StringBuilder();
+            for (int i = 0; i < states.Count; i++)
+            {
+                stateStructStr.AppendFormat("stateMap[\"{0}\"] = m_{1}State;\r\n",
+                    stateText[i],
+                    states[i].ToLower());
+            }
+
+            sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
+            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
+            sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeMain_cpp_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder stateStructStr = new StringBuilder();
+            for (int i = 0; i < states.Count; i++)
+            {
+                stateStructStr.AppendFormat("stateMap[\"{0}\"] = m_{1}State;\r\n",
+                    stateText[i],
+                    states[i].ToLower());
+            }
+
+            sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
+            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
+            sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeMain_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+            for (int i = 0; i < states.Count; i++)
+            {
+                enumContentsStr.AppendFormat("{0},\r\n", states[i]);
+                XmlStringToStateEnumMapStr.AppendFormat("\"{0}\", {1}_STATE::{2},\r\n", stateText[i], getMechanismName(mech.controlFile).ToUpper(), states[i]);
+                stateStructStr.AppendFormat("const StateStruc m_{2}State = {{ {0}_STATE::{3}, \"{1}\", StateType::{0}_STATE, true }};\r\n",
+                    getMechanismName(mech.controlFile).ToUpper(),
+                    stateText[i],
+                    states[i].ToLower(),
+                    states[i].ToUpper());
+            }
+
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
+            sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeSolenoidUsage_h_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+           
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeSolenoidUsage_cpp_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+           
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeMotorControllerUsage_h_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+           
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeMotorControllerUsage_cpp_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+           
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeDigitalInputUsage_h_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+            
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeDigitalInputUsage_cpp_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+            
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeServoUsage_h_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+           
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeServoUsage_cpp_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
+            StringBuilder stateStructStr = new StringBuilder();
+          
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 

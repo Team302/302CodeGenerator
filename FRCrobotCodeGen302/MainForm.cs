@@ -15,7 +15,7 @@ namespace FRCrobotCodeGen302
         toolConfiguration generatorConfig = new toolConfiguration();
         robotConfig theRobotConfiguration = new robotConfig();
         codeGenerator_302Robotics codeGenerator = new codeGenerator_302Robotics();
-
+       
         public MainForm()
         {
             InitializeComponent();
@@ -161,7 +161,11 @@ namespace FRCrobotCodeGen302
                     loadGeneratorConfig(configurationFilePathNameTextBox.Text);
                     addProgress("Configuration file loaded.");
 
+                    generatorConfig.rootOutputFolder = Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), generatorConfig.rootOutputFolder);
+                    generatorConfig.robotConfiguration = Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), generatorConfig.robotConfiguration);
+
                     theRobotConfiguration.load(generatorConfig.robotConfiguration);
+
 
                     addProgress("Populating the robot configuration tree view.");
                     populateTree(theRobotConfiguration);

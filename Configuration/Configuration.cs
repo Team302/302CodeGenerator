@@ -17,6 +17,24 @@ namespace Configuration
         public string stateManager_h = "";
         public string stateManager_cpp = "";
 
+        public string state_h = "";
+        public string state_cpp = "";
+
+        public string main_h = "";
+        public string main_cpp = "";
+
+        public string SolenoidUsage_h = "";
+        public string SolenoidUsage_cpp = "";
+
+        public string MotorControllerUsage_h = "";
+        public string MotorControllerUsage_cpp = "";
+
+        public string DigitalInputUsage_h = "";
+        public string DigitalInputUsage_cpp = "";
+
+        public string ServoUsage_h = "";
+        public string ServoUsage_cpp = "";
+
         public void loadDummyData()
         {
         }
