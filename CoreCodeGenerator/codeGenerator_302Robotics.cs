@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using Configuration;
 using robotConfiguration;
+using Robot;
 
 namespace CoreCodeGenerator
 {

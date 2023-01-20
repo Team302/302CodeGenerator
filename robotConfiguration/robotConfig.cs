@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
+using Robot;
 
 namespace robotConfiguration
 {
@@ -16,53 +17,76 @@ namespace robotConfiguration
 
         public void load(string theRobotConfigFullPathFileName)
         {
-            string rootRobotConfigFolder = Path.GetDirectoryName(theRobotConfigFullPathFileName);
-
-            addProgress("Loading robot configuration " + theRobotConfigFullPathFileName);
-            theRobot = loadRobotConfiguration(theRobotConfigFullPathFileName);
-            theRobot.initialize();
-
-            if (theRobot.mechanism != null)
+            try
             {
-                addProgress("Loading mechanism files...");
-                mechanismControlDefinition = new Dictionary<string, statedata>();
-                foreach (mechanism mech in theRobot.mechanism)
-                {
-                    string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+                string rootRobotConfigFolder = Path.GetDirectoryName(theRobotConfigFullPathFileName);
 
-                    addProgress("======== Loading mechanism configuration " + mechanismConfig);
-                    statedata sd = loadStateDataConfiguration(mechanismConfig);
-                    mechanismControlDefinition.Add(mech.controlFile, sd);
+                addProgress("Loading robot configuration " + theRobotConfigFullPathFileName);
+                theRobot = loadRobotConfiguration(theRobotConfigFullPathFileName);
+
+                if (theRobot.mechanism != null)
+                {
+                    addProgress("Loading mechanism files...");
+                    mechanismControlDefinition = new Dictionary<string, statedata>();
+                    foreach (mechanism mech in theRobot.mechanism)
+                    {
+                        if (string.IsNullOrEmpty(mech.controlFile))
+                        {
+                            progressCallback("controlFile for " + mech.type + " cannot be empty. Skipping");
+                        }
+                        else
+                        {
+                            string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+
+                            addProgress("======== Loading mechanism configuration " + mechanismConfig);
+                            statedata sd = loadStateDataConfiguration(mechanismConfig);
+                            mechanismControlDefinition.Add(mech.controlFile, sd);
+                        }
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                progressCallback(ex.Message);
             }
         }
 
         public void save(string theRobotConfigFullPathFileName)
         {
-            string rootRobotConfigFolder = Path.GetDirectoryName(theRobotConfigFullPathFileName);
-
-            addProgress("Saving robot configuration " + theRobotConfigFullPathFileName);
-            saveRobotConfiguration(theRobotConfigFullPathFileName);
-
-            if (theRobot.mechanism != null)
+            try
             {
-                addProgress("Saving state data files...");
-                foreach(KeyValuePair<string, statedata> kvp in mechanismControlDefinition)
-                {
-                    string path = Path.GetDirectoryName(theRobotConfigFullPathFileName);
-                    path = Path.Combine(path, "states", kvp.Key);
-                    saveStateDataConfiguration(path, kvp.Value);
-                }
+                string rootRobotConfigFolder = Path.GetDirectoryName(theRobotConfigFullPathFileName);
 
-                mechanismControlDefinition = new Dictionary<string, statedata>();
-                foreach (mechanism mech in theRobot.mechanism)
-                {
-                    string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+                addProgress("Saving robot configuration " + theRobotConfigFullPathFileName);
+                saveRobotConfiguration(theRobotConfigFullPathFileName);
 
-                    addProgress("======== Loading mechanism configuration " + mechanismConfig);
-                    statedata sd = loadStateDataConfiguration(mechanismConfig);
-                    mechanismControlDefinition.Add(mech.controlFile, sd);
+                if (theRobot.mechanism != null)
+                {
+                    addProgress("Saving state data files...");
+                    foreach (KeyValuePair<string, statedata> kvp in mechanismControlDefinition)
+                    {
+                        string path = Path.GetDirectoryName(theRobotConfigFullPathFileName);
+                        path = Path.Combine(path, "states", kvp.Key);
+                        saveStateDataConfiguration(path, kvp.Value);
+                    }
+
+                    mechanismControlDefinition = new Dictionary<string, statedata>();
+                    foreach (mechanism mech in theRobot.mechanism)
+                    {
+                        if (string.IsNullOrEmpty(mech.controlFile))
+                            throw new Exception("controlFile for " + mech.type + " cannot be empty");
+
+                        string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+
+                        addProgress("======== Loading mechanism configuration " + mechanismConfig);
+                        statedata sd = loadStateDataConfiguration(mechanismConfig);
+                        mechanismControlDefinition.Add(mech.controlFile, sd);
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                progressCallback(ex.Message);
             }
         }
 

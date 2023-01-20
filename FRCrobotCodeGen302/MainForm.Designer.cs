@@ -46,6 +46,7 @@ namespace FRCrobotCodeGen302
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.robotTreeView = new System.Windows.Forms.TreeView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.addTreeElementButton = new System.Windows.Forms.Button();
             this.valueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.saveConfigBbutton = new System.Windows.Forms.Button();
             this.valueComboBox = new System.Windows.Forms.ComboBox();
@@ -259,6 +260,7 @@ namespace FRCrobotCodeGen302
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.addTreeElementButton);
             this.panel1.Controls.Add(this.valueNumericUpDown);
             this.panel1.Controls.Add(this.saveConfigBbutton);
             this.panel1.Controls.Add(this.valueComboBox);
@@ -269,12 +271,24 @@ namespace FRCrobotCodeGen302
             this.panel1.Size = new System.Drawing.Size(563, 456);
             this.panel1.TabIndex = 2;
             // 
+            // addTreeElementButton
+            // 
+            this.addTreeElementButton.Location = new System.Drawing.Point(26, 149);
+            this.addTreeElementButton.Name = "addTreeElementButton";
+            this.addTreeElementButton.Size = new System.Drawing.Size(230, 37);
+            this.addTreeElementButton.TabIndex = 4;
+            this.addTreeElementButton.Text = "button3";
+            this.addTreeElementButton.UseVisualStyleBackColor = true;
+            this.addTreeElementButton.Visible = false;
+            this.addTreeElementButton.Click += new System.EventHandler(this.addTreeElementButton_Click);
+            // 
             // valueNumericUpDown
             // 
             this.valueNumericUpDown.Location = new System.Drawing.Point(26, 117);
             this.valueNumericUpDown.Name = "valueNumericUpDown";
             this.valueNumericUpDown.Size = new System.Drawing.Size(230, 26);
             this.valueNumericUpDown.TabIndex = 3;
+            this.valueNumericUpDown.Visible = false;
             this.valueNumericUpDown.ValueChanged += new System.EventHandler(this.valueNumericUpDown_ValueChanged);
             // 
             // saveConfigBbutton
@@ -298,6 +312,7 @@ namespace FRCrobotCodeGen302
             this.valueComboBox.Name = "valueComboBox";
             this.valueComboBox.Size = new System.Drawing.Size(230, 28);
             this.valueComboBox.TabIndex = 1;
+            this.valueComboBox.Visible = false;
             this.valueComboBox.SelectedValueChanged += new System.EventHandler(this.valueComboBox_SelectedValueChanged);
             // 
             // valueTextBox
@@ -308,6 +323,7 @@ namespace FRCrobotCodeGen302
             this.valueTextBox.Name = "valueTextBox";
             this.valueTextBox.Size = new System.Drawing.Size(230, 26);
             this.valueTextBox.TabIndex = 0;
+            this.valueTextBox.Visible = false;
             this.valueTextBox.TextChanged += new System.EventHandler(this.valueTextBox_TextChanged);
             // 
             // MainForm
@@ -358,6 +374,7 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button saveConfigBbutton;
         private System.Windows.Forms.NumericUpDown valueNumericUpDown;
+        private System.Windows.Forms.Button addTreeElementButton;
     }
 }
 
