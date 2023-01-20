@@ -187,7 +187,10 @@ namespace FRCrobotCodeGen302
 
             if (e.Node.Tag != null)
             {
-                if (e.Node.GetNodeCount(false) == 0) // means that the node is a leaf
+                if (
+                    (e.Node.GetNodeCount(false) == 0) // means that the node is a leaf
+                    && !(e.Node.Parent.Tag is robot)
+                    )
                 {
                     lastSelectedValueNode = e.Node;
 

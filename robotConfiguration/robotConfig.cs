@@ -20,6 +20,7 @@ namespace robotConfiguration
 
             addProgress("Loading robot configuration " + theRobotConfigFullPathFileName);
             theRobot = loadRobotConfiguration(theRobotConfigFullPathFileName);
+            theRobot.initialize();
 
             if (theRobot.mechanism != null)
             {
