@@ -24,7 +24,7 @@ namespace Configuration
         public string main_cpp = "";
 
         public string SolenoidUsage_h = "";
-        public string SolenoidUSage_cpp = "";
+        public string SolenoidUsage_cpp = "";
 
         public string MotorControllerUsage_h = "";
         public string MotorControllerUsage_cpp = "";
