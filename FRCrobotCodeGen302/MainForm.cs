@@ -183,6 +183,7 @@ namespace FRCrobotCodeGen302
         {
             valueTextBox.Visible = false;
             valueComboBox.Visible = false;
+            valueNumericUpDown.Visible = false;
 
             if (e.Node.Tag != null)
             {
@@ -210,6 +211,11 @@ namespace FRCrobotCodeGen302
                             valueComboBox.Items.Add(en);
 
                         valueComboBox.SelectedIndex = valueComboBox.FindStringExact(value.ToString());
+                    }
+                    else if(value is uint)
+                    {
+                        valueNumericUpDown.Visible = true;
+                        valueNumericUpDown.Value = (uint)value;
                     }
                     else
                     {
@@ -273,11 +279,37 @@ namespace FRCrobotCodeGen302
                 }
             }
         }
+        private void valueNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            if (enableCallback)
+            {
+                if (lastSelectedValueNode != null)
+                {
+                    try
+                    {
+                        leafNodeTag lnt = (leafNodeTag)(lastSelectedValueNode.Tag);
+
+                        Type t = lastSelectedValueNode.Tag.GetType();
+                        PropertyInfo prop = lastSelectedValueNode.Parent.Tag.GetType().GetProperty(lnt.name, BindingFlags.Public | BindingFlags.Instance);
+                        if (null != prop && prop.CanWrite)
+                        {
+                            prop.SetValue(lastSelectedValueNode.Parent.Tag, (uint)valueNumericUpDown.Value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Failed to set " + lastSelectedValueNode.Text + " to " + valueNumericUpDown.Text);
+                    }
+                }
+            }
+        }
 
         private void saveConfigBbutton_Click(object sender, EventArgs e)
         {
             theRobotConfiguration.save(generatorConfig.robotConfiguration);
         }
+
+
     }
 
     class leafNodeTag

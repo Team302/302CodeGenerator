@@ -46,6 +46,7 @@ namespace FRCrobotCodeGen302
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.robotTreeView = new System.Windows.Forms.TreeView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.valueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.saveConfigBbutton = new System.Windows.Forms.Button();
             this.valueComboBox = new System.Windows.Forms.ComboBox();
             this.valueTextBox = new System.Windows.Forms.TextBox();
@@ -58,6 +59,7 @@ namespace FRCrobotCodeGen302
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.valueNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -248,6 +250,7 @@ namespace FRCrobotCodeGen302
             // robotTreeView
             // 
             this.robotTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.robotTreeView.HideSelection = false;
             this.robotTreeView.Location = new System.Drawing.Point(0, 0);
             this.robotTreeView.Name = "robotTreeView";
             this.robotTreeView.Size = new System.Drawing.Size(305, 456);
@@ -256,6 +259,7 @@ namespace FRCrobotCodeGen302
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.valueNumericUpDown);
             this.panel1.Controls.Add(this.saveConfigBbutton);
             this.panel1.Controls.Add(this.valueComboBox);
             this.panel1.Controls.Add(this.valueTextBox);
@@ -264,6 +268,14 @@ namespace FRCrobotCodeGen302
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(563, 456);
             this.panel1.TabIndex = 2;
+            // 
+            // valueNumericUpDown
+            // 
+            this.valueNumericUpDown.Location = new System.Drawing.Point(26, 117);
+            this.valueNumericUpDown.Name = "valueNumericUpDown";
+            this.valueNumericUpDown.Size = new System.Drawing.Size(230, 26);
+            this.valueNumericUpDown.TabIndex = 3;
+            this.valueNumericUpDown.ValueChanged += new System.EventHandler(this.valueNumericUpDown_ValueChanged);
             // 
             // saveConfigBbutton
             // 
@@ -318,6 +330,7 @@ namespace FRCrobotCodeGen302
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.valueNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -344,6 +357,7 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.TextBox valueTextBox;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button saveConfigBbutton;
+        private System.Windows.Forms.NumericUpDown valueNumericUpDown;
     }
 }
 

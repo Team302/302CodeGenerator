@@ -21,15 +21,18 @@ namespace robotConfiguration
             addProgress("Loading robot configuration " + theRobotConfigFullPathFileName);
             theRobot = loadRobotConfiguration(theRobotConfigFullPathFileName);
 
-            addProgress("Loading mechanism files...");
-            mechanismControlDefinition = new Dictionary<string, statedata>();
-            foreach (mechanism mech in theRobot.mechanism)
+            if (theRobot.mechanism != null)
             {
-                string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+                addProgress("Loading mechanism files...");
+                mechanismControlDefinition = new Dictionary<string, statedata>();
+                foreach (mechanism mech in theRobot.mechanism)
+                {
+                    string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
 
-                addProgress("======== Loading mechanism configuration " + mechanismConfig);
-                statedata sd = loadStateDataConfiguration(mechanismConfig);
-                mechanismControlDefinition.Add(mech.controlFile, sd);
+                    addProgress("======== Loading mechanism configuration " + mechanismConfig);
+                    statedata sd = loadStateDataConfiguration(mechanismConfig);
+                    mechanismControlDefinition.Add(mech.controlFile, sd);
+                }
             }
         }
 
@@ -40,22 +43,25 @@ namespace robotConfiguration
             addProgress("Saving robot configuration " + theRobotConfigFullPathFileName);
             saveRobotConfiguration(theRobotConfigFullPathFileName);
 
-            addProgress("Saving state data files...");
-            foreach(KeyValuePair<string, statedata> kvp in mechanismControlDefinition)
+            if (theRobot.mechanism != null)
             {
-                string path = Path.GetDirectoryName(theRobotConfigFullPathFileName);
-                path = Path.Combine(path, "states", kvp.Key);
-                saveStateDataConfiguration(path, kvp.Value);
-            }
+                addProgress("Saving state data files...");
+                foreach(KeyValuePair<string, statedata> kvp in mechanismControlDefinition)
+                {
+                    string path = Path.GetDirectoryName(theRobotConfigFullPathFileName);
+                    path = Path.Combine(path, "states", kvp.Key);
+                    saveStateDataConfiguration(path, kvp.Value);
+                }
 
-            mechanismControlDefinition = new Dictionary<string, statedata>();
-            foreach (mechanism mech in theRobot.mechanism)
-            {
-                string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+                mechanismControlDefinition = new Dictionary<string, statedata>();
+                foreach (mechanism mech in theRobot.mechanism)
+                {
+                    string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
 
-                addProgress("======== Loading mechanism configuration " + mechanismConfig);
-                statedata sd = loadStateDataConfiguration(mechanismConfig);
-                mechanismControlDefinition.Add(mech.controlFile, sd);
+                    addProgress("======== Loading mechanism configuration " + mechanismConfig);
+                    statedata sd = loadStateDataConfiguration(mechanismConfig);
+                    mechanismControlDefinition.Add(mech.controlFile, sd);
+                }
             }
         }
 
