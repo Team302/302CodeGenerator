@@ -44,6 +44,7 @@
     <Compile Include="robotConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="robot.cs" />
+    <Compile Include="robot_manualAdditions.cs" />
     <Compile Include="stateData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
