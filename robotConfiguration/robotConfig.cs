@@ -121,11 +121,13 @@ namespace robotConfiguration
         }
         void saveStateDataConfiguration(string fullPathName, statedata obj)
         {
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+            xmlWriterSettings.NewLineOnAttributes = true;
+            xmlWriterSettings.Indent = true;
+
             var mySerializer = new XmlSerializer(typeof(statedata));
-            using (var myFileStream = new FileStream(fullPathName, FileMode.Create))
-            {
-                mySerializer.Serialize(myFileStream, obj);
-            }
+            XmlWriter tw = XmlWriter.Create(fullPathName, xmlWriterSettings);
+            mySerializer.Serialize(tw, obj);
         }
     }
 
