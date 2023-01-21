@@ -1,3 +1,4 @@
+![](/Docs/dragon_302.png)
 # 302CodeGenerator
 
 The 302CodeGenerator is a .NET application which uses the robot definition xml files used by Team 302 in order to generate some of the C++ robot files.
