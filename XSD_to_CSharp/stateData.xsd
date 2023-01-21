@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns="http://tempuri.org/stateData" elementFormDefault="qualified" targetNamespace="http://tempuri.org/stateData" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="statedata">
     <xs:complexType>
@@ -46,30 +46,7 @@
   </xs:element>
   <xs:element name="mechanismTarget">
     <xs:complexType>
-      <xs:attribute default="UNKNOWN" name="stateIdentifier">
-        <xs:simpleType>
-          <xs:restriction base="xs:NMTOKEN">
-            <xs:enumeration value="INTAKE_OFF" />
-            <xs:enumeration value="INTAKE_ON" />
-            <xs:enumeration value="INTAKE_EXPEL" />
-            <xs:enumeration value="ARM_OFF" />
-            <xs:enumeration value="ARM_UP" />
-            <xs:enumeration value="ARM_DOWN" />
-            <xs:enumeration value="ARM_MOVING_UP" />
-            <xs:enumeration value="ARM_MOVING_DOWN" />
-            <xs:enumeration value="RELEASE_OPEN_OPEN" />
-            <xs:enumeration value="RELEASE_OPEN_CLOSED" />
-            <xs:enumeration value="RELEASE_CLOSED_OPEN" />
-            <xs:enumeration value="RELEASE_CLOSED_CLOSED" />
-            <xs:enumeration value="FLAG_GRAB" />
-            <xs:enumeration value="FLAG_RELEASE" />
-            <xs:enumeration value="EXAMPLE_OFF" />
-            <xs:enumeration value="EXAMPLE_FORWARD" />
-            <xs:enumeration value="EXAMPLE_REVERSE" />
-            <xs:enumeration value="UNKNOWN" />
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
+      <xs:attribute name="stateIdentifier" type="xs:string" use="required" />
       <xs:attribute name="controlDataIdentifier" type="xs:string" use="required" />
       <xs:attribute name="controlDataIdentifier2" type="xs:string" />
       <xs:attribute name="value" type="xs:string" use="required" />

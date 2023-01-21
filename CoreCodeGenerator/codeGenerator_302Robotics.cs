@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Configuration;
 using robotConfiguration;
 using Robot;
+using StateData;
 
 namespace CoreCodeGenerator
 {
@@ -21,7 +22,7 @@ namespace CoreCodeGenerator
         {
             theRobotConfiguration = theRobotConfig;
             
-            string rootFolder = Path.Combine(generatorConfig.rootOutputFolder, "output");
+            string rootFolder = generatorConfig.rootOutputFolder;
             string rootRobotConfigFolder = Path.GetDirectoryName(generatorConfig.robotConfiguration);
 
             addProgress("Output will be placed at " + rootFolder);
@@ -48,7 +49,7 @@ namespace CoreCodeGenerator
 
         private void writeMechanismFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
-            string mechanismFolder = Path.Combine(baseFolder, "mechinisms", getMechanismName(mech.controlFile));
+            string mechanismFolder = Path.Combine(baseFolder, "mechanisms", getMechanismName(mech.controlFile));
 
             if (!Directory.Exists(mechanismFolder))
             {
@@ -156,7 +157,7 @@ namespace CoreCodeGenerator
 
         private void writeMotorControllerUsageFiles(string baseFolder, toolConfiguration generatorConfig)
         {
-            string baseFileName = Path.Combine(baseFolder, "MotorController");
+            string baseFileName = Path.Combine(baseFolder, "MotorControllerUsage");
             string fullPathFilename_h = baseFileName + ".h";
             string fullPathFilename_cpp = baseFileName + ".cpp";
 
@@ -503,11 +504,11 @@ namespace CoreCodeGenerator
 
             StringBuilder enumContentsStr = new StringBuilder();
             StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            StringBuilder stateStructStr = new StringBuilder();
             
-            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
-            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+
+            
+            sb = sb.Replace("$DIGITAL_SENSOR_USAGE_ENUM_CONTENTS_COMMA_SEPARATED$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            sb = sb.Replace("$DIGITAL_SENSOR_USAGE_XML_TEXT2ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 

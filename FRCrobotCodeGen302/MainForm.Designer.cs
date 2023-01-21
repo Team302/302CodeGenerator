@@ -46,6 +46,7 @@ namespace FRCrobotCodeGen302
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.robotTreeView = new System.Windows.Forms.TreeView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.addStateDataFileButton = new System.Windows.Forms.Button();
             this.addTreeElementButton = new System.Windows.Forms.Button();
             this.valueNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.saveConfigBbutton = new System.Windows.Forms.Button();
@@ -260,6 +261,7 @@ namespace FRCrobotCodeGen302
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.addStateDataFileButton);
             this.panel1.Controls.Add(this.addTreeElementButton);
             this.panel1.Controls.Add(this.valueNumericUpDown);
             this.panel1.Controls.Add(this.saveConfigBbutton);
@@ -270,6 +272,17 @@ namespace FRCrobotCodeGen302
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(563, 456);
             this.panel1.TabIndex = 2;
+            // 
+            // addStateDataFileButton
+            // 
+            this.addStateDataFileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.addStateDataFileButton.Location = new System.Drawing.Point(26, 192);
+            this.addStateDataFileButton.Name = "addStateDataFileButton";
+            this.addStateDataFileButton.Size = new System.Drawing.Size(230, 37);
+            this.addStateDataFileButton.TabIndex = 5;
+            this.addStateDataFileButton.Text = "Add statedata file";
+            this.addStateDataFileButton.UseVisualStyleBackColor = true;
+            this.addStateDataFileButton.Click += new System.EventHandler(this.addStateDataButton_Click);
             // 
             // addTreeElementButton
             // 
@@ -375,6 +388,7 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.Button saveConfigBbutton;
         private System.Windows.Forms.NumericUpDown valueNumericUpDown;
         private System.Windows.Forms.Button addTreeElementButton;
+        private System.Windows.Forms.Button addStateDataFileButton;
     }
 }
 

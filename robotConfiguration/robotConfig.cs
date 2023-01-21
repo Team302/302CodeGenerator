@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 using Robot;
+using StateData;
 
 namespace robotConfiguration
 {
@@ -70,18 +71,18 @@ namespace robotConfiguration
                         saveStateDataConfiguration(path, kvp.Value);
                     }
 
-                    mechanismControlDefinition = new Dictionary<string, statedata>();
-                    foreach (mechanism mech in theRobot.mechanism)
-                    {
-                        if (string.IsNullOrEmpty(mech.controlFile))
-                            throw new Exception("controlFile for " + mech.type + " cannot be empty");
+                    //mechanismControlDefinition = new Dictionary<string, statedata>();
+                    //foreach (mechanism mech in theRobot.mechanism)
+                    //{
+                    //    if (string.IsNullOrEmpty(mech.controlFile))
+                    //        throw new Exception("controlFile for " + mech.type + " cannot be empty");
 
-                        string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
+                    //    string mechanismConfig = Path.Combine(rootRobotConfigFolder, "states", mech.controlFile);
 
-                        addProgress("======== Loading mechanism configuration " + mechanismConfig);
-                        statedata sd = loadStateDataConfiguration(mechanismConfig);
-                        mechanismControlDefinition.Add(mech.controlFile, sd);
-                    }
+                    //    addProgress("======== Loading mechanism configuration " + mechanismConfig);
+                    //    statedata sd = loadStateDataConfiguration(mechanismConfig);
+                    //    mechanismControlDefinition.Add(mech.controlFile, sd);
+                    //}
                 }
             }
             catch(Exception ex)
@@ -108,6 +109,7 @@ namespace robotConfiguration
             var mySerializer = new XmlSerializer(typeof(robot));
             XmlWriter tw = XmlWriter.Create(fullPathName, xmlWriterSettings);
             mySerializer.Serialize(tw, theRobot);
+            tw.Close();
         }
 
         statedata loadStateDataConfiguration(string fullPathName)
@@ -120,11 +122,14 @@ namespace robotConfiguration
         }
         void saveStateDataConfiguration(string fullPathName, statedata obj)
         {
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+            xmlWriterSettings.NewLineOnAttributes = true;
+            xmlWriterSettings.Indent = true;
+
             var mySerializer = new XmlSerializer(typeof(statedata));
-            using (var myFileStream = new FileStream(fullPathName, FileMode.Create))
-            {
-                mySerializer.Serialize(myFileStream, obj);
-            }
+            XmlWriter tw = XmlWriter.Create(fullPathName, xmlWriterSettings);
+            mySerializer.Serialize(tw, obj);
+            tw.Close();
         }
     }
 
