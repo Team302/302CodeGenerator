@@ -35,6 +35,9 @@ namespace Configuration
         public string ServoUsage_h = "";
         public string ServoUsage_cpp = "";
 
+        public string MechanismTypes_h = "";
+        public string MechanismTypes_cpp = "";
+
         public void loadDummyData()
         {
         }
