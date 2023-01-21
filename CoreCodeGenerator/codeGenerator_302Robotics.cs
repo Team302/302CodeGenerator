@@ -45,6 +45,7 @@ namespace CoreCodeGenerator
                 writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
             }
             writeUsagesFiles(rootFolder, generatorConfig);
+            writeMechanismsFiles(rootFolder, generatorConfig);
         }
 
         private void writeMechanismFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
@@ -63,7 +64,17 @@ namespace CoreCodeGenerator
             writeStateFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
             writeMainFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
             
+
         }
+
+        private void writeMechanismsFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string mechanismFolder = Path.Combine(baseFolder, "mechanisms");
+
+            writeMechanismTypeFiles(mechanismFolder, generatorConfig);
+
+        }
+
 
         private void writeUsagesFiles(string baseFolder, toolConfiguration generatorConfig)
         {
@@ -127,7 +138,7 @@ namespace CoreCodeGenerator
 
         private void writeMainFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
-            string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "Main");
+            string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile));
             string fullPathFilename_h = baseFileName + ".h";
             string fullPathFilename_cpp = baseFileName + ".cpp";
 
@@ -191,6 +202,17 @@ namespace CoreCodeGenerator
             List<string> stateText = new List<string>();
             writeServoUsage_h_File(fullPathFilename_h, generatorConfig.ServoUsage_h);
             writeServoUsage_cpp_File(fullPathFilename_cpp, generatorConfig.ServoUsage_cpp);
+        }
+
+        private void writeMechanismTypeFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string baseFileName = Path.Combine(baseFolder, "MechanismTypes");
+            string fullPathFilename_h = baseFileName + ".h";
+            string fullPathFilename_cpp = baseFileName + ".cpp";
+           
+
+            writeMechanismTypes_h_File(fullPathFilename_h, generatorConfig.MechanismTypes_h);
+            writeMechanismTypes_cpp_File(fullPathFilename_cpp, generatorConfig.MechanismTypes_cpp);
         }
 
         /// <summary>
@@ -529,7 +551,7 @@ namespace CoreCodeGenerator
         }
 
         private void writeServoUsage_cpp_File(string fullPathFilename, string template)
-        {
+         {
             addProgress("Generating " + fullPathFilename);
 
             StringBuilder sb = prepareFile(fullPathFilename, template);
@@ -537,10 +559,47 @@ namespace CoreCodeGenerator
             StringBuilder enumContentsStr = new StringBuilder();
             StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
             StringBuilder stateStructStr = new StringBuilder();
-          
+           
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+        private void writeMechanismTypes_h_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder enumContentsStr = new StringBuilder();
+
+
+            foreach (KeyValuePair < string,statedata > kvp in theRobotConfiguration.mechanismControlDefinition)
+            {
+               string mechanmismName = getMechanismName (kvp.Key).ToUpper();
+                enumContentsStr.AppendLine (mechanmismName + ",");
+            }
+            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_NAMES$", enumContentsStr.ToString());
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeMechanismTypes_cpp_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder XmlStringToEnumMapStr = new StringBuilder();
+
+            foreach (KeyValuePair<string, statedata> kvp in theRobotConfiguration.mechanismControlDefinition)
+            {
+                string mechanmismName = getMechanismName(kvp.Key).ToUpper();
+                XmlStringToEnumMapStr.AppendLine(string.Format("m_typeMap[\"{0}\"] = MECHANISM_TYPE::{0};", mechanmismName));
+            }
+            //m_typeMap["EXAMPLE"] = MECHANISM_TYPE::EXAMPLE;
+
+            sb = sb.Replace("$MECHANISM_NAMES_MAPPED_TO_ENUMS$", XmlStringToEnumMapStr.ToString());
+
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
