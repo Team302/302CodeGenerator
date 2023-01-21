@@ -364,7 +364,7 @@ namespace FRCrobotCodeGen302
             try
             {
                 theRobotConfiguration.save(generatorConfig.robotConfiguration);
-                MessageBox.Show("File saved");
+                //MessageBox.Show("File saved");
                 addProgress("File saved");
             }
             catch (Exception ex)
