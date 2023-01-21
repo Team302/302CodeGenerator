@@ -13,6 +13,7 @@ using StateData;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Web;
+using System.Drawing;
 
 namespace FRCrobotCodeGen302
 {
@@ -259,6 +260,19 @@ namespace FRCrobotCodeGen302
                         valueNumericUpDown.Visible = true;
                         valueNumericUpDown.Value = (uint)value;
                     }
+                    else if (lastSelectedValueNode.Text == "controlFile")
+                    {
+                        valueComboBox.Visible = true;
+                        valueComboBox.Items.Clear();
+
+                        string stateDataFilesPath = Path.Combine(Path.GetDirectoryName(generatorConfig.robotConfiguration), "states");
+
+                        string[] files = Directory.GetFiles(stateDataFilesPath, "*.xml");
+                        foreach(string f in files)
+                            valueComboBox.Items.Add(Path.GetFileName(f));
+
+                        valueComboBox.SelectedIndex = valueComboBox.FindStringExact(value.ToString());
+                    }
                     else
                     {
                         valueTextBox.Visible = true;
@@ -282,7 +296,10 @@ namespace FRCrobotCodeGen302
                         PropertyInfo prop = lastSelectedValueNode.Parent.Tag.GetType().GetProperty(lnt.name, BindingFlags.Public | BindingFlags.Instance);
                         if (null != prop && prop.CanWrite)
                         {
-                            prop.SetValue(lastSelectedValueNode.Parent.Tag, Enum.Parse(lnt.type, valueComboBox.Text));
+                            if( lastSelectedValueNode.Text == "controlFile")
+                                prop.SetValue(lastSelectedValueNode.Parent.Tag, valueComboBox.Text);
+                            else
+                                prop.SetValue(lastSelectedValueNode.Parent.Tag, Enum.Parse(lnt.type, valueComboBox.Text));
                         }
                     }
                     catch (Exception ex)
@@ -376,6 +393,61 @@ namespace FRCrobotCodeGen302
         {
             Type t = obj.GetType();
             return ((t.Name == "Collection`1") && (t.Namespace == "System.Collections.ObjectModel"));
+        }
+
+        private void addStateDataButton_Click(object sender, EventArgs e)
+        {
+            string mechanismName = "";
+            if (InputBox("Enter mechanism name", "Please enter a name for the mechanism file. A .xml extension will be added.", ref mechanismName) == DialogResult.OK)
+            {
+                statedata sd = new statedata();
+                string filename = Path.GetFileNameWithoutExtension(mechanismName) + ".xml";
+
+                theRobotConfiguration.mechanismControlDefinition.Add(filename, sd);
+                AddNode(null, sd, filename);
+            }
+        }
+
+        public static DialogResult InputBox(string title, string promptText, ref string value)
+        {
+            Form form = new Form();
+            Label label = new Label();
+            TextBox textBox = new TextBox();
+            Button buttonOk = new Button();
+            Button buttonCancel = new Button();
+
+            form.Text = title;
+            label.Text = promptText;
+            textBox.Text = value;
+
+            buttonOk.Text = "OK";
+            buttonCancel.Text = "Cancel";
+            buttonOk.DialogResult = DialogResult.OK;
+            buttonCancel.DialogResult = DialogResult.Cancel;
+
+            label.SetBounds(9, 20, 372, 13);
+            textBox.SetBounds(12, 36, 372, 20);
+            buttonOk.SetBounds(228, 72, 75, 23);
+            buttonCancel.SetBounds(309, 72, 75, 23);
+
+            label.AutoSize = true;
+            textBox.Anchor = textBox.Anchor | AnchorStyles.Right;
+            buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+            form.ClientSize = new Size(396, 107);
+            form.Controls.AddRange(new Control[] { label, textBox, buttonOk, buttonCancel });
+            form.ClientSize = new Size(Math.Max(300, label.Right + 10), form.ClientSize.Height);
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+            form.AcceptButton = buttonOk;
+            form.CancelButton = buttonCancel;
+
+            DialogResult dialogResult = form.ShowDialog();
+            value = textBox.Text;
+            return dialogResult;
         }
     }
 
