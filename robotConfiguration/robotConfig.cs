@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 using Robot;
+using StateData;
 
 namespace robotConfiguration
 {

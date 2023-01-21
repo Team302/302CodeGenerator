@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using Robot;
+using StateData;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Web;
@@ -124,7 +125,12 @@ namespace FRCrobotCodeGen302
         {
             robotTreeView.Nodes.Clear();
             AddNode(null, myRobot.theRobot, "Robot");
+            foreach (KeyValuePair<string, statedata> kvp in myRobot.mechanismControlDefinition)
+            {
+                AddNode(null, kvp.Value, kvp.Key);
+            }
         }
+
 
         public void loadGeneratorConfig(string configurationFullPathName)
         {
