@@ -11,6 +11,8 @@ using Configuration;
 using robotConfiguration;
 using Robot;
 using StateData;
+using System.Collections;
+using System.Reflection;
 
 namespace CoreCodeGenerator
 {
@@ -21,9 +23,8 @@ namespace CoreCodeGenerator
         public void generate(robotConfig theRobotConfig, toolConfiguration generatorConfig)
         {
             theRobotConfiguration = theRobotConfig;
-            
+
             string rootFolder = generatorConfig.rootOutputFolder;
-            string rootRobotConfigFolder = Path.GetDirectoryName(generatorConfig.robotConfiguration);
 
             addProgress("Output will be placed at " + rootFolder);
 
@@ -44,6 +45,7 @@ namespace CoreCodeGenerator
 
                 writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
             }
+            
             writeUsagesFiles(rootFolder, generatorConfig);
             writeMechanismsFiles(rootFolder, generatorConfig);
         }
@@ -358,6 +360,10 @@ namespace CoreCodeGenerator
                     states[i].ToUpper());
             }
 
+            
+            string baseClassName = getMechanismBaseClassName(mech, true);
+            sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
@@ -367,6 +373,14 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
+        private string getMechanismBaseClassName(object mech, bool state)
+        {
+            int numberOfMotors = traverseRobotXML_countObjects(mech, typeof(motor));
+            int numberOfSolenoids = traverseRobotXML_countObjects(mech, typeof(solenoid));
+            int numberOfServos = traverseRobotXML_countObjects(mech, typeof(servo));
+
+            return getBaseClassName(numberOfMotors, numberOfSolenoids, numberOfServos, state);
+        }
         private void writeState_cpp_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
@@ -380,6 +394,9 @@ namespace CoreCodeGenerator
                     stateText[i],
                     states[i].ToLower());
             }
+
+            string baseClassName = getMechanismBaseClassName(mech, true);
+            sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
 
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
             sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
@@ -401,6 +418,9 @@ namespace CoreCodeGenerator
                     stateText[i],
                     states[i].ToLower());
             }
+
+            string baseClassName = getMechanismBaseClassName(mech, false);
+            sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
 
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
             sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
@@ -429,6 +449,9 @@ namespace CoreCodeGenerator
                     states[i].ToUpper());
             }
 
+            string baseClassName = getMechanismBaseClassName(mech, false);
+            sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+            
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
@@ -596,7 +619,6 @@ namespace CoreCodeGenerator
                 string mechanmismName = getMechanismName(kvp.Key).ToUpper();
                 XmlStringToEnumMapStr.AppendLine(string.Format("m_typeMap[\"{0}\"] = MECHANISM_TYPE::{0};", mechanmismName));
             }
-            //m_typeMap["EXAMPLE"] = MECHANISM_TYPE::EXAMPLE;
 
             sb = sb.Replace("$MECHANISM_NAMES_MAPPED_TO_ENUMS$", XmlStringToEnumMapStr.ToString());
 
@@ -614,5 +636,80 @@ namespace CoreCodeGenerator
             return stateText;
         }
 
+        public int traverseRobotXML_countObjects(object obj, Type objectType)
+        {
+            int count = 0;
+
+            Type objType = obj.GetType();
+
+            if(obj.GetType() == objectType)
+            {
+                count++;
+            }
+
+            if (isACollection(obj))
+            {
+                ICollection ic = obj as ICollection;
+                foreach (var v in ic)
+                {
+                    count += traverseRobotXML_countObjects(v, objectType);
+                }
+            }
+            else
+            {
+                PropertyInfo[] propertyInfos = objType.GetProperties();
+
+                if ((objType.FullName != "System.String") && (propertyInfos.Length > 0))
+                {
+                    string previousName = "";
+                    foreach (PropertyInfo pi in propertyInfos)
+                    {
+                        object theObj = pi.GetValue(obj);
+
+                        if (theObj != null)
+                        {
+                            // in the generated code each property is followed by a 2nd property with the same name + "Specified"
+                            // we want to skip these
+                            if (pi.Name != previousName + "Specified")
+                            {
+                                count += traverseRobotXML_countObjects(theObj, objectType);
+                                previousName = pi.Name;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // this means that this is a leaf node
+                }
+            }
+
+            return count;
+        }
+
+        private bool isACollection(object obj)
+        {
+            Type t = obj.GetType();
+            return ((t.Name == "Collection`1") && (t.Namespace == "System.Collections.ObjectModel"));
+        }
+
+        string getBaseClassName(int numberOfMotors, int numberOfSolenoids, int numberOfServos, bool state)
+        {
+            string returnValue = "Mech";
+            
+            if(numberOfMotors > 0)
+                returnValue += numberOfMotors + "IndMotor";
+
+            if (numberOfSolenoids > 0)
+                returnValue += numberOfSolenoids + "Solenoid";
+
+            if (numberOfServos > 0)
+                returnValue += numberOfServos + "Servo";
+
+            if (state) 
+                returnValue += "State";
+
+            return returnValue;
+        }
     }
 }
