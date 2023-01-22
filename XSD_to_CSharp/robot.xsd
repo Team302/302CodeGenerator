@@ -6,7 +6,7 @@
         <xs:element minOccurs="0" maxOccurs="1" ref="pdp" />
         <xs:element minOccurs="0" maxOccurs="1" ref="pcm" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="pigeon" />
-        <xs:element minOccurs="0" maxOccurs="1" ref="limelight" />
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="limelight" />
         <xs:element minOccurs="0" maxOccurs="1" ref="chassis" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="mechanism" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="camera" />

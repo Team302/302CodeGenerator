@@ -63,13 +63,39 @@ namespace Robot
         public robot()
         {
             this._pigeon = new System.Collections.ObjectModel.Collection<pigeon>();
+            this._limelight = new System.Collections.ObjectModel.Collection<limelight>();
             this._mechanism = new System.Collections.ObjectModel.Collection<mechanism>();
             this._camera = new System.Collections.ObjectModel.Collection<camera>();
             this._roborio = new System.Collections.ObjectModel.Collection<roborio>();
         }
         
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private System.Collections.ObjectModel.Collection<limelight> _limelight;
+        
         [System.Xml.Serialization.XmlElementAttribute("limelight")]
-        public limelight limelight { get; set; }
+        public System.Collections.ObjectModel.Collection<limelight> limelight
+        {
+            get
+            {
+                return _limelight;
+            }
+            private set
+            {
+                _limelight = value;
+            }
+        }
+        
+        /// <summary>
+        /// <para xml:lang="en">Gets a value indicating whether the limelight collection is empty.</para>
+        /// </summary>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool limelightSpecified
+        {
+            get
+            {
+                return (this.limelight.Count != 0);
+            }
+        }
         
         [System.Xml.Serialization.XmlElementAttribute("chassis")]
         public chassis chassis { get; set; }
