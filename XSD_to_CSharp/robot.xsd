@@ -1,13 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <xs:schema xmlns="http://tempuri.org/robot" elementFormDefault="qualified" targetNamespace="http://tempuri.org/robot" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="robot">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" maxOccurs="1" ref="pdp" />
-        <xs:element minOccurs="0" maxOccurs="1" ref="pcm" />
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="pcm" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="pigeon" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="limelight" />
-        <xs:element minOccurs="0" maxOccurs="1" ref="chassis" />
+
+        <xs:element ref="chassis" />
+
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="mechanism" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="camera" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="roborio" />
@@ -81,7 +83,6 @@
         <xs:simpleType>
           <xs:restriction base="xs:NMTOKEN">
             <xs:enumeration value="CENTER_OF_ROTATION" />
-            <xs:enumeration value="SHOOTER_CENTER" />
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
@@ -420,33 +421,14 @@
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="cancoder" />
         <xs:element minOccurs="0" maxOccurs="1" ref="colorsensor" />
       </xs:sequence>
-      <xs:attribute default="INTAKE" name="type">
-        <xs:simpleType>
-          <xs:restriction base="xs:NMTOKEN">
-            <xs:enumeration value="INTAKE" />
-            <xs:enumeration value="ARM" />
-            <xs:enumeration value="RELEASE" />
-            <xs:enumeration value="FLAGARM" />
-            <xs:enumeration value="EXAMPLE" />
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
+      <xs:attribute name="type" type="xs:string" use="required" />
       <xs:attribute name="networkTable" type="xs:string" />
       <xs:attribute name="controlFile" type="xs:string" />
     </xs:complexType>
   </xs:element>
   <xs:element name="solenoid">
     <xs:complexType>
-      <xs:attribute default="INTAKE" name="usage">
-        <xs:simpleType>
-          <xs:restriction base="xs:NMTOKEN">
-            <xs:enumeration value="INTAKE" />
-            <xs:enumeration value="INTAKE2" />
-            <xs:enumeration value="ARM" />
-            <xs:enumeration value="EXAMPLE" />
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
+      <xs:attribute name="usage" type="xs:string" use="required" />
       <xs:attribute default="0" name="canId" type="xs:unsignedInt">
       </xs:attribute>
       <xs:attribute default="0" name="channel">
@@ -475,15 +457,7 @@
   </xs:element>
   <xs:element name="servo">
     <xs:complexType>
-      <xs:attribute default="RELEASE_SERVO" name="usage">
-        <xs:simpleType>
-          <xs:restriction base="xs:NMTOKEN">
-            <xs:enumeration value="RELEASE_SERVO" />
-            <xs:enumeration value="RELEASE_SERVO2" />
-            <xs:enumeration value="FLAG_SERVO" />
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
+      <xs:attribute name="usage" type="xs:string" use="required" />
       <xs:attribute default="0" name="pwmId">
         <xs:simpleType>
           <xs:restriction base="xs:NMTOKEN">
@@ -531,35 +505,9 @@
       <xs:sequence>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="digitalInput" />
       </xs:sequence>
-      <xs:attribute default="ARM" name="usage">
-        <xs:simpleType>
-          <xs:restriction base="xs:NMTOKEN">
-            <xs:enumeration value="SWERVE_DRIVE" />
-            <xs:enumeration value="SWERVE_TURN" />
-            <xs:enumeration value="DIFFERENTIAL_LEFT_MAIN" />
-            <xs:enumeration value="DIFFERENTIAL_LEFT_FOLLOWER" />
-            <xs:enumeration value="DIFFERENTIAL_RIGHT_MAIN" />
-            <xs:enumeration value="DIFFERENTIAL_RIGHT_FOLLOWER" />
-            <xs:enumeration value="MECANUM_LEFT_FRONT" />
-            <xs:enumeration value="MECANUM_LEFT_BACK" />
-            <xs:enumeration value="MECANUM_RIGHT_FRONT" />
-            <xs:enumeration value="MECANUM_RIGHT_BACK" />
-            <xs:enumeration value="EXAMPLE" />
-            <xs:enumeration value="INTAKE" />
-            <xs:enumeration value="INTAKE_TRANSFER" />
-            <xs:enumeration value="ARM" />
-          </xs:restriction>
-        </xs:simpleType>
+      <xs:attribute name="usage" type="xs:string" use="required" />
+      <xs:attribute default="0" name="canId" type="xs:unsignedInt">
       </xs:attribute>
-		<xs:attribute default="0" name="canId" type="xs:unsignedInt">
-
-      <!--      <xs:restriction base="xs:integer">
-				<xs:minInclusive value="0"/>
-				<xs:maxInclusive value="50"/>
-			</xs:restriction>
-      -->
-      
-		</xs:attribute>
       <xs:attribute default="rio" name="canBusName" type="xs:string" />
       <xs:attribute name="pdpID" type="xs:string" />
       <xs:attribute default="TALONSRX" name="type">
@@ -668,6 +616,7 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
+      <xs:attribute default="countsPerDegree&#x9;&#x9;    CDATA&#xD;&#xA;&gt;" name="countsPerInch" type="xs:string" />
     </xs:complexType>
   </xs:element>
   <xs:element name="analogInput">
@@ -701,21 +650,7 @@
   </xs:element>
   <xs:element name="digitalInput">
     <xs:complexType>
-      <xs:attribute default="BALL_PRESENT" name="usage">
-        <xs:simpleType>
-          <xs:restriction base="xs:NMTOKEN">
-            <xs:enumeration value="INTAKE_OUT" />
-            <xs:enumeration value="INTAKE_IN" />
-            <xs:enumeration value="BALL_PRESENT" />
-            <xs:enumeration value="BALL_TRANSFER_FORWARD" />
-            <xs:enumeration value="BALL_TRANSFER_BACK" />
-            <xs:enumeration value="SHOOTER_HOOD_MIN" />
-            <xs:enumeration value="SHOOTER_HOOD_MAX" />
-            <xs:enumeration value="CLIMBER_BACK" />
-            <xs:enumeration value="CLIMBER_FORWARD" />
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
+      <xs:attribute name="usage" type="xs:string" use="required" />
       <xs:attribute default="0" name="digitalId">
         <xs:simpleType>
           <xs:restriction base="xs:NMTOKEN">
