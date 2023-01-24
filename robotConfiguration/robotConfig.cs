@@ -25,9 +25,6 @@ namespace robotConfiguration
                 addProgress("Loading robot configuration " + theRobotConfigFullPathFileName);
                 theRobot = loadRobotConfiguration(theRobotConfigFullPathFileName);
 
-                if (theRobot.pcm == null)
-                    theRobot.pcm = new pcm(); 
-                
                 if (theRobot.pdp == null)
                     theRobot.pdp = new pdp(); 
                 
