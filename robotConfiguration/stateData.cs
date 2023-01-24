@@ -281,6 +281,8 @@ namespace StateData
         MOTION_PROFILE_ARC,
         
         POSITION_DEGREES,
+        
+        POSITION_INCH,
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]

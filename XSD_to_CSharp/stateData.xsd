@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <xs:schema xmlns="http://tempuri.org/stateData" elementFormDefault="qualified" targetNamespace="http://tempuri.org/stateData" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="statedata">
     <xs:complexType>
@@ -24,6 +24,7 @@
             <xs:enumeration value="MOTION_PROFILE" />
             <xs:enumeration value="MOTION_PROFILE_ARC" />
             <xs:enumeration value="POSITION_DEGREES" />
+            <xs:enumeration value="POSITION_INCH" />
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
