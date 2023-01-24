@@ -26,8 +26,46 @@ namespace Robot
         [System.Xml.Serialization.XmlElementAttribute("pdp")]
         public pdp pdp { get; set; }
         
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private System.Collections.ObjectModel.Collection<pcm> _pcm;
+        
         [System.Xml.Serialization.XmlElementAttribute("pcm")]
-        public pcm pcm { get; set; }
+        public System.Collections.ObjectModel.Collection<pcm> pcm
+        {
+            get
+            {
+                return _pcm;
+            }
+            private set
+            {
+                _pcm = value;
+            }
+        }
+        
+        /// <summary>
+        /// <para xml:lang="en">Gets a value indicating whether the pcm collection is empty.</para>
+        /// </summary>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool pcmSpecified
+        {
+            get
+            {
+                return (this.pcm.Count != 0);
+            }
+        }
+        
+        /// <summary>
+        /// <para xml:lang="en">Initializes a new instance of the <see cref="robot" /> class.</para>
+        /// </summary>
+        public robot()
+        {
+            this._pcm = new System.Collections.ObjectModel.Collection<pcm>();
+            this._pigeon = new System.Collections.ObjectModel.Collection<pigeon>();
+            this._limelight = new System.Collections.ObjectModel.Collection<limelight>();
+            this._mechanism = new System.Collections.ObjectModel.Collection<mechanism>();
+            this._camera = new System.Collections.ObjectModel.Collection<camera>();
+            this._roborio = new System.Collections.ObjectModel.Collection<roborio>();
+        }
         
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         private System.Collections.ObjectModel.Collection<pigeon> _pigeon;
@@ -57,20 +95,35 @@ namespace Robot
             }
         }
         
-        /// <summary>
-        /// <para xml:lang="en">Initializes a new instance of the <see cref="robot" /> class.</para>
-        /// </summary>
-        public robot()
-        {
-            this._pigeon = new System.Collections.ObjectModel.Collection<pigeon>();
-            this._mechanism = new System.Collections.ObjectModel.Collection<mechanism>();
-            this._camera = new System.Collections.ObjectModel.Collection<camera>();
-            this._roborio = new System.Collections.ObjectModel.Collection<roborio>();
-        }
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private System.Collections.ObjectModel.Collection<limelight> _limelight;
         
         [System.Xml.Serialization.XmlElementAttribute("limelight")]
-        public limelight limelight { get; set; }
+        public System.Collections.ObjectModel.Collection<limelight> limelight
+        {
+            get
+            {
+                return _limelight;
+            }
+            private set
+            {
+                _limelight = value;
+            }
+        }
         
+        /// <summary>
+        /// <para xml:lang="en">Gets a value indicating whether the limelight collection is empty.</para>
+        /// </summary>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool limelightSpecified
+        {
+            get
+            {
+                return (this.limelight.Count != 0);
+            }
+        }
+        
+        //[System.ComponentModel.DataAnnotations.RequiredAttribute()]
         [System.Xml.Serialization.XmlElementAttribute("chassis")]
         public chassis chassis { get; set; }
         
@@ -483,8 +536,6 @@ namespace Robot
     {
         
         CENTER_OF_ROTATION,
-        
-        SHOOTER_CENTER,
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
@@ -957,22 +1008,9 @@ namespace Robot
             this._digitalInput = new System.Collections.ObjectModel.Collection<digitalInput>();
         }
         
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private motorusage _usage = Robot.motorusage.ARM;
-        
-        //[System.ComponentModel.DefaultValueAttribute(Robot.motorusage.ARM)]
+        //[System.ComponentModel.DataAnnotations.RequiredAttribute()]
         [System.Xml.Serialization.XmlAttributeAttribute("usage")]
-        public motorusage usage
-        {
-            get
-            {
-                return _usage;
-            }
-            set
-            {
-                _usage = value;
-            }
-        }
+        public string usage { get; set; }
         
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         private uint _canId = 0u;
@@ -1274,6 +1312,23 @@ namespace Robot
                 _voltageCompensationEnable = value;
             }
         }
+        
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private string _countsPerInch = "countsPerDegree\t\t    CDATA\r\n>";
+        
+        //[System.ComponentModel.DefaultValueAttribute("countsPerDegree\t\t    CDATA\r\n>")]
+        [System.Xml.Serialization.XmlAttributeAttribute("countsPerInch")]
+        public string countsPerInch
+        {
+            get
+            {
+                return _countsPerInch;
+            }
+            set
+            {
+                _countsPerInch = value;
+            }
+        }
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
@@ -1285,22 +1340,9 @@ namespace Robot
     public partial class digitalInput
     {
         
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private digitalInputusage _usage = Robot.digitalInputusage.BALL_PRESENT;
-        
-        //[System.ComponentModel.DefaultValueAttribute(Robot.digitalInputusage.BALL_PRESENT)]
+        //[System.ComponentModel.DataAnnotations.RequiredAttribute()]
         [System.Xml.Serialization.XmlAttributeAttribute("usage")]
-        public digitalInputusage usage
-        {
-            get
-            {
-                return _usage;
-            }
-            set
-            {
-                _usage = value;
-            }
-        }
+        public string usage { get; set; }
         
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         private digitalInputdigitalId _digitalId = Robot.digitalInputdigitalId.Item0;
@@ -1352,31 +1394,6 @@ namespace Robot
                 _debouncetime = value;
             }
         }
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
-    [System.SerializableAttribute()]
-    //[System.Xml.Serialization.XmlTypeAttribute("digitalInputusage", Namespace="http://tempuri.org/robot", AnonymousType=true)]
-    public enum digitalInputusage
-    {
-        
-        INTAKE_OUT,
-        
-        INTAKE_IN,
-        
-        BALL_PRESENT,
-        
-        BALL_TRANSFER_FORWARD,
-        
-        BALL_TRANSFER_BACK,
-        
-        SHOOTER_HOOD_MIN,
-        
-        SHOOTER_HOOD_MAX,
-        
-        CLIMBER_BACK,
-        
-        CLIMBER_FORWARD,
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
@@ -1475,41 +1492,6 @@ namespace Robot
         
         [System.Xml.Serialization.XmlEnumAttribute("false")]
         Item_false,
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
-    [System.SerializableAttribute()]
-    //[System.Xml.Serialization.XmlTypeAttribute("motorusage", Namespace="http://tempuri.org/robot", AnonymousType=true)]
-    public enum motorusage
-    {
-        
-        SWERVE_DRIVE,
-        
-        SWERVE_TURN,
-        
-        DIFFERENTIAL_LEFT_MAIN,
-        
-        DIFFERENTIAL_LEFT_FOLLOWER,
-        
-        DIFFERENTIAL_RIGHT_MAIN,
-        
-        DIFFERENTIAL_RIGHT_FOLLOWER,
-        
-        MECANUM_LEFT_FRONT,
-        
-        MECANUM_LEFT_BACK,
-        
-        MECANUM_RIGHT_FRONT,
-        
-        MECANUM_RIGHT_BACK,
-        
-        EXAMPLE,
-        
-        INTAKE,
-        
-        INTAKE_TRANSFER,
-        
-        ARM,
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
@@ -2218,22 +2200,9 @@ namespace Robot
         [System.Xml.Serialization.XmlElementAttribute("colorsensor")]
         public colorsensor colorsensor { get; set; }
         
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private mechanismtype _type = Robot.mechanismtype.INTAKE;
-        
-        //[System.ComponentModel.DefaultValueAttribute(Robot.mechanismtype.INTAKE)]
+        //[System.ComponentModel.DataAnnotations.RequiredAttribute()]
         [System.Xml.Serialization.XmlAttributeAttribute("type")]
-        public mechanismtype type
-        {
-            get
-            {
-                return _type;
-            }
-            set
-            {
-                _type = value;
-            }
-        }
+        public string type { get; set; }
         
         [System.Xml.Serialization.XmlAttributeAttribute("networkTable")]
         public string networkTable { get; set; }
@@ -2251,22 +2220,9 @@ namespace Robot
     public partial class solenoid
     {
         
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private solenoidusage _usage = Robot.solenoidusage.INTAKE;
-        
-        //[System.ComponentModel.DefaultValueAttribute(Robot.solenoidusage.INTAKE)]
+        //[System.ComponentModel.DataAnnotations.RequiredAttribute()]
         [System.Xml.Serialization.XmlAttributeAttribute("usage")]
-        public solenoidusage usage
-        {
-            get
-            {
-                return _usage;
-            }
-            set
-            {
-                _usage = value;
-            }
-        }
+        public string usage { get; set; }
         
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         private uint _canId = 0u;
@@ -2322,21 +2278,6 @@ namespace Robot
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
     [System.SerializableAttribute()]
-    //[System.Xml.Serialization.XmlTypeAttribute("solenoidusage", Namespace="http://tempuri.org/robot", AnonymousType=true)]
-    public enum solenoidusage
-    {
-        
-        INTAKE,
-        
-        INTAKE2,
-        
-        ARM,
-        
-        EXAMPLE,
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
-    [System.SerializableAttribute()]
     //[System.Xml.Serialization.XmlTypeAttribute("solenoidchannel", Namespace="http://tempuri.org/robot", AnonymousType=true)]
     public enum solenoidchannel
     {
@@ -2388,22 +2329,9 @@ namespace Robot
     public partial class servo
     {
         
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private servousage _usage = Robot.servousage.RELEASE_SERVO;
-        
-        //[System.ComponentModel.DefaultValueAttribute(Robot.servousage.RELEASE_SERVO)]
+        //[System.ComponentModel.DataAnnotations.RequiredAttribute()]
         [System.Xml.Serialization.XmlAttributeAttribute("usage")]
-        public servousage usage
-        {
-            get
-            {
-                return _usage;
-            }
-            set
-            {
-                _usage = value;
-            }
-        }
+        public string usage { get; set; }
         
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         private servopwmId _pwmId = Robot.servopwmId.Item0;
@@ -2455,19 +2383,6 @@ namespace Robot
                 _maxAngle = value;
             }
         }
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
-    [System.SerializableAttribute()]
-    //[System.Xml.Serialization.XmlTypeAttribute("servousage", Namespace="http://tempuri.org/robot", AnonymousType=true)]
-    public enum servousage
-    {
-        
-        RELEASE_SERVO,
-        
-        RELEASE_SERVO2,
-        
-        FLAG_SERVO,
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
@@ -2573,23 +2488,6 @@ namespace Robot
         kOnboard,
         
         kMXP,
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
-    [System.SerializableAttribute()]
-    //[System.Xml.Serialization.XmlTypeAttribute("mechanismtype", Namespace="http://tempuri.org/robot", AnonymousType=true)]
-    public enum mechanismtype
-    {
-        
-        INTAKE,
-        
-        ARM,
-        
-        RELEASE,
-        
-        FLAGARM,
-        
-        EXAMPLE,
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]

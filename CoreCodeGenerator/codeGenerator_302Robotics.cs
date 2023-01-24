@@ -11,6 +11,8 @@ using Configuration;
 using robotConfiguration;
 using Robot;
 using StateData;
+using System.Collections;
+using System.Reflection;
 
 namespace CoreCodeGenerator
 {
@@ -21,9 +23,8 @@ namespace CoreCodeGenerator
         public void generate(robotConfig theRobotConfig, toolConfiguration generatorConfig)
         {
             theRobotConfiguration = theRobotConfig;
-            
+
             string rootFolder = generatorConfig.rootOutputFolder;
-            string rootRobotConfigFolder = Path.GetDirectoryName(generatorConfig.robotConfiguration);
 
             addProgress("Output will be placed at " + rootFolder);
 
@@ -44,10 +45,12 @@ namespace CoreCodeGenerator
 
                 writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
             }
+            
             writeUsagesFiles(rootFolder, generatorConfig);
             writeMechanismsFiles(rootFolder, generatorConfig);
         }
 
+        #region Main generator functions
         private void writeMechanismFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string mechanismFolder = Path.Combine(baseFolder, "mechanisms", getMechanismName(mech.controlFile));
@@ -66,7 +69,6 @@ namespace CoreCodeGenerator
             
 
         }
-
         private void writeMechanismsFiles(string baseFolder, toolConfiguration generatorConfig)
         {
             string mechanismFolder = Path.Combine(baseFolder, "mechanisms");
@@ -74,8 +76,6 @@ namespace CoreCodeGenerator
             writeMechanismTypeFiles(mechanismFolder, generatorConfig);
 
         }
-
-
         private void writeUsagesFiles(string baseFolder, toolConfiguration generatorConfig)
         {
             string OutFolder = Path.Combine(baseFolder, "hw", "usages");
@@ -88,18 +88,14 @@ namespace CoreCodeGenerator
             else
                 addProgress("Output directory " + OutFolder + " already exists");
 
-            
-            writeSolenoidUsageFiles(OutFolder, generatorConfig);
-            writeMotorControllerUsageFiles(OutFolder, generatorConfig);
-            writeDigitalInputUsageFiles(OutFolder, generatorConfig);
-            writeServoUsageFiles(OutFolder, generatorConfig);
+            writeXXXUsageFiles(OutFolder, generatorConfig.SolenoidUsage_h, generatorConfig.SolenoidUsage_cpp, "SolenoidUsage", typeof(solenoid), "SOLENOID");
+            writeXXXUsageFiles(OutFolder, generatorConfig.MotorControllerUsage_h, generatorConfig.MotorControllerUsage_cpp, "MotorControllerUsage", typeof(motor), "MOTOR_CONTROLLER");
+            writeXXXUsageFiles(OutFolder, generatorConfig.DigitalInputUsage_h, generatorConfig.DigitalInputUsage_cpp, "DigitalInputUsage", typeof(digitalInput), "DIGITAL_SENSOR");
+            writeXXXUsageFiles(OutFolder, generatorConfig.ServoUsage_h, generatorConfig.ServoUsage_cpp, "ServoUsage", typeof(servo), "SERVO");
         }
+        #endregion
 
-        private string getMechanismName(string controlFileName)
-        {
-            return Path.GetFileNameWithoutExtension(controlFileName);
-        }
-
+        #region Mechanism files
         private void writeStateMgrFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "StateMgr");
@@ -118,7 +114,6 @@ namespace CoreCodeGenerator
             writeStateMgr_h_File(fullPathFilename_h, generatorConfig.stateManager_h, mech, mechanismStateData, states, stateText);
             writeStateMgr_cpp_File(fullPathFilename_cpp, generatorConfig.stateManager_cpp, mech, mechanismStateData, states, stateText);
         }
-
         private void writeStateFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "State");
@@ -135,7 +130,6 @@ namespace CoreCodeGenerator
             writeState_h_File(fullPathFilename_h, generatorConfig.state_h, mech, mechanismStateData, states, stateText);
             writeState_cpp_File(fullPathFilename_cpp, generatorConfig.state_cpp, mech, mechanismStateData, states, stateText);
         }
-
         private void writeMainFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile));
@@ -152,58 +146,6 @@ namespace CoreCodeGenerator
             writeMain_h_File(fullPathFilename_h, generatorConfig.main_h, mech, mechanismStateData, states, stateText);
             writeMain_cpp_File(fullPathFilename_cpp, generatorConfig.main_cpp, mech, mechanismStateData, states, stateText);
         }
-
-        private void writeSolenoidUsageFiles(string baseFolder, toolConfiguration generatorConfig)
-        {
-            string baseFileName = Path.Combine(baseFolder, "SolenoidUsage");
-            string fullPathFilename_h = baseFileName + ".h";
-            string fullPathFilename_cpp = baseFileName + ".cpp";
-
-            List<string> states = new List<string>();
-            List<string> stateText = new List<string>();
-        
-            writeSolenoidUsage_h_File(fullPathFilename_h, generatorConfig.SolenoidUsage_h);
-            writeSolenoidUsage_cpp_File(fullPathFilename_cpp, generatorConfig.SolenoidUsage_cpp);
-        }
-
-        private void writeMotorControllerUsageFiles(string baseFolder, toolConfiguration generatorConfig)
-        {
-            string baseFileName = Path.Combine(baseFolder, "MotorControllerUsage");
-            string fullPathFilename_h = baseFileName + ".h";
-            string fullPathFilename_cpp = baseFileName + ".cpp";
-
-            List<string> states = new List<string>();
-            List<string> stateText = new List<string>();
-            
-            writeMotorControllerUsage_h_File(fullPathFilename_h, generatorConfig.MotorControllerUsage_h);
-            writeMotorControllerUsage_cpp_File(fullPathFilename_cpp, generatorConfig.MotorControllerUsage_cpp);
-        }
-
-        private void writeDigitalInputUsageFiles(string baseFolder, toolConfiguration generatorConfig)
-        {
-            string baseFileName = Path.Combine(baseFolder, "DigitalInputUsage");
-            string fullPathFilename_h = baseFileName + ".h";
-            string fullPathFilename_cpp = baseFileName + ".cpp";
-
-            List<string> states = new List<string>();
-            List<string> stateText = new List<string>();
-         
-            writeDigitalInputUsage_h_File(fullPathFilename_h, generatorConfig.DigitalInputUsage_h);
-            writeDigitalInputUsage_cpp_File(fullPathFilename_cpp, generatorConfig.DigitalInputUsage_cpp);
-        }
-
-        private void writeServoUsageFiles(string baseFolder, toolConfiguration generatorConfig)
-        {
-            string baseFileName = Path.Combine(baseFolder, "ServoUsage");
-            string fullPathFilename_h = baseFileName + ".h";
-            string fullPathFilename_cpp = baseFileName + ".cpp";
-
-            List<string> states = new List<string>();
-            List<string> stateText = new List<string>();
-            writeServoUsage_h_File(fullPathFilename_h, generatorConfig.ServoUsage_h);
-            writeServoUsage_cpp_File(fullPathFilename_cpp, generatorConfig.ServoUsage_cpp);
-        }
-
         private void writeMechanismTypeFiles(string baseFolder, toolConfiguration generatorConfig)
         {
             string baseFileName = Path.Combine(baseFolder, "MechanismTypes");
@@ -213,79 +155,6 @@ namespace CoreCodeGenerator
 
             writeMechanismTypes_h_File(fullPathFilename_h, generatorConfig.MechanismTypes_h);
             writeMechanismTypes_cpp_File(fullPathFilename_cpp, generatorConfig.MechanismTypes_cpp);
-        }
-
-        /// <summary>
-        /// Keep in mind that the number of hand coded sections in the template might be different
-        /// than in the previous file
-        /// </summary>
-        /// <param name="previousContent"></param>
-        /// <param name="template"></param>
-        /// <returns></returns>
-        private string copyHandCodedSections(string previousContent, string template)
-        {
-            string handCodedStart = @"//========= Hand modified code start section (\d+) ========";
-            string handCodedEnd = @"//========= Hand modified code end section (\d+) ========";
-
-            string regex = handCodedStart + "([\\s\\S]*?)" + handCodedEnd;
-            Regex matchesInPreviousFile = new Regex(regex);
-            Regex matchesInTemplateFile = new Regex(regex);
-
-            MatchCollection previousFileMatches = matchesInPreviousFile.Matches(previousContent);
-            MatchCollection templateFileMatches = matchesInPreviousFile.Matches(template);
-
-            if (previousFileMatches.Count > 0)
-            {
-                int allGroupID = 0;
-                int sectionGroupID = 1;
-                //todo add code here to validate that the templates and the regex captures are correct
-
-                List<(int, string)> handCodedSections = new List<(int, string)>();
-                foreach (Match m in previousFileMatches)
-                {
-                    handCodedSections.Add((System.Convert.ToInt32(m.Groups[sectionGroupID].Value), m.Value));
-                }
-
-                //section ID, text start, text length, text
-                List<(int, int, int, string)> templateHandCodedSections = new List<(int, int, int, string)>();
-                foreach (Match m in templateFileMatches)
-                {
-                    templateHandCodedSections.Add((Convert.ToInt32(m.Groups[sectionGroupID].Value),
-                                                    m.Groups[allGroupID].Index, m.Groups[allGroupID].Length,
-                                                    m.Value));
-                }
-
-                foreach ((int, int, int, string) t in templateHandCodedSections.OrderByDescending(t => t.Item2))
-                {
-                    int sectionID = t.Item1;
-                    int startIndex = t.Item2;
-                    int length = t.Item3;
-
-                    (int, string) handCode = handCodedSections.Find(c => c.Item1 == sectionID);
-                    if (handCode != (0, null))
-                        template = template.Remove(startIndex, length).Insert(startIndex, handCode.Item2);
-                }
-            }
-
-            return template;
-        }
-
-        StringBuilder prepareFile(string fullPathFilename, string template)
-        {
-            StringBuilder sb = new StringBuilder();
-            String updatedFileContents = template;
-
-            if (File.Exists(fullPathFilename))
-            {
-                string oldContent = File.ReadAllText(fullPathFilename);
-                updatedFileContents = copyHandCodedSections(oldContent, template);
-
-                File.Delete(fullPathFilename);
-            }
-
-            sb.AppendLine(updatedFileContents);
-
-            return sb;
         }
 
         private void writeStateMgr_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
@@ -358,6 +227,10 @@ namespace CoreCodeGenerator
                     states[i].ToUpper());
             }
 
+
+            string baseClassName = getMechanismBaseClassName(mech, true);
+            sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
@@ -381,6 +254,9 @@ namespace CoreCodeGenerator
                     states[i].ToLower());
             }
 
+            string baseClassName = getMechanismBaseClassName(mech, true);
+            sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
             sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
@@ -401,6 +277,9 @@ namespace CoreCodeGenerator
                     stateText[i],
                     states[i].ToLower());
             }
+
+            string baseClassName = getMechanismBaseClassName(mech, false);
+            sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
 
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
             sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
@@ -429,6 +308,9 @@ namespace CoreCodeGenerator
                     states[i].ToUpper());
             }
 
+            string baseClassName = getMechanismBaseClassName(mech, false);
+            sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
@@ -438,133 +320,6 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeSolenoidUsage_h_File(string fullPathFilename, string template)
-        {
-            addProgress("Generating " + fullPathFilename);
-
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
-            StringBuilder enumContentsStr = new StringBuilder();
-            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            StringBuilder stateStructStr = new StringBuilder();
-           
-            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
-            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
-
-        private void writeSolenoidUsage_cpp_File(string fullPathFilename, string template)
-        {
-            addProgress("Generating " + fullPathFilename);
-
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
-            StringBuilder enumContentsStr = new StringBuilder();
-            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            StringBuilder stateStructStr = new StringBuilder();
-           
-            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
-            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
-
-        private void writeMotorControllerUsage_h_File(string fullPathFilename, string template)
-        {
-            addProgress("Generating " + fullPathFilename);
-
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
-            StringBuilder enumContentsStr = new StringBuilder();
-            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            StringBuilder stateStructStr = new StringBuilder();
-           
-            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
-            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
-
-        private void writeMotorControllerUsage_cpp_File(string fullPathFilename, string template)
-        {
-            addProgress("Generating " + fullPathFilename);
-
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
-            StringBuilder enumContentsStr = new StringBuilder();
-            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            StringBuilder stateStructStr = new StringBuilder();
-           
-            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
-            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
-
-        private void writeDigitalInputUsage_h_File(string fullPathFilename, string template)
-        {
-            addProgress("Generating " + fullPathFilename);
-
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
-            StringBuilder enumContentsStr = new StringBuilder();
-            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            StringBuilder stateStructStr = new StringBuilder();
-            
-            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
-            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
-
-        private void writeDigitalInputUsage_cpp_File(string fullPathFilename, string template)
-        {
-            addProgress("Generating " + fullPathFilename);
-
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
-            StringBuilder enumContentsStr = new StringBuilder();
-            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            
-
-            
-            sb = sb.Replace("$DIGITAL_SENSOR_USAGE_ENUM_CONTENTS_COMMA_SEPARATED$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$DIGITAL_SENSOR_USAGE_XML_TEXT2ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
-
-        private void writeServoUsage_h_File(string fullPathFilename, string template)
-        {
-            addProgress("Generating " + fullPathFilename);
-
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
-            StringBuilder enumContentsStr = new StringBuilder();
-            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            StringBuilder stateStructStr = new StringBuilder();
-           
-            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
-            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
-
-        private void writeServoUsage_cpp_File(string fullPathFilename, string template)
-         {
-            addProgress("Generating " + fullPathFilename);
-
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
-            StringBuilder enumContentsStr = new StringBuilder();
-            StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
-            StringBuilder stateStructStr = new StringBuilder();
-           
-            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
-            sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            File.WriteAllText(fullPathFilename, sb.ToString());
-        }
         private void writeMechanismTypes_h_File(string fullPathFilename, string template)
         {
             addProgress("Generating " + fullPathFilename);
@@ -574,10 +329,10 @@ namespace CoreCodeGenerator
             StringBuilder enumContentsStr = new StringBuilder();
 
 
-            foreach (KeyValuePair < string,statedata > kvp in theRobotConfiguration.mechanismControlDefinition)
+            foreach (KeyValuePair<string, statedata> kvp in theRobotConfiguration.mechanismControlDefinition)
             {
-               string mechanmismName = getMechanismName (kvp.Key).ToUpper();
-                enumContentsStr.AppendLine (mechanmismName + ",");
+                string mechanmismName = getMechanismName(kvp.Key).ToUpper();
+                enumContentsStr.AppendLine(mechanmismName + ",");
             }
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_NAMES$", enumContentsStr.ToString());
             File.WriteAllText(fullPathFilename, sb.ToString());
@@ -596,14 +351,54 @@ namespace CoreCodeGenerator
                 string mechanmismName = getMechanismName(kvp.Key).ToUpper();
                 XmlStringToEnumMapStr.AppendLine(string.Format("m_typeMap[\"{0}\"] = MECHANISM_TYPE::{0};", mechanmismName));
             }
-            //m_typeMap["EXAMPLE"] = MECHANISM_TYPE::EXAMPLE;
 
             sb = sb.Replace("$MECHANISM_NAMES_MAPPED_TO_ENUMS$", XmlStringToEnumMapStr.ToString());
 
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
+        #endregion
 
-        string getStateNameFromText(string mechanismName, string stateText)
+        #region Usage files
+        private void writeXXXUsageFiles(string baseFolder, string template_h, string template_cpp, string filenameWithoutExtension, Type objectType, string usageName)
+        {
+            string baseFileName = Path.Combine(baseFolder, filenameWithoutExtension);
+            string fullPathFilename_h = baseFileName + ".h";
+            string fullPathFilename_cpp = baseFileName + ".cpp";
+
+            writeXXXUsage_h_File(fullPathFilename_h, template_h, objectType);
+            writeXXXUsage_cpp_File(fullPathFilename_cpp, template_cpp, objectType, usageName);
+        }
+        private void writeXXXUsage_h_File(string fullPathFilename, string template, Type objectType)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            List<string> usages = traverseRobotXML_getUsageList(theRobotConfiguration.theRobot, objectType);
+            string enumContentsStr = toCommaSeparated(usages);
+
+            sb = sb.Replace("$USAGE_ENUM_COMMA_SEPARATED$", enumContentsStr.TrimStart(new char[] { ',', '\r', '\n' }));
+
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeXXXUsage_cpp_File(string fullPathFilename, string template, Type objectType, string usageName)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            List<string> usages = traverseRobotXML_getUsageList(theRobotConfiguration.theRobot, objectType);
+            string contentsStr = toSeparateStatements("m_usageMap[\"{0}\"] = " + usageName + "_USAGE::{0};", usages);
+
+            sb = sb.Replace("$USAGE_TEXT_TO_ENUM_MAP$", contentsStr);
+
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+        #endregion
+
+        #region Helper functions
+        private string getStateNameFromText(string mechanismName, string stateText)
         {
             string nameUpperCase = mechanismName.ToUpper();
             if (stateText.StartsWith(nameUpperCase))
@@ -613,6 +408,243 @@ namespace CoreCodeGenerator
 
             return stateText;
         }
+        private string toCommaSeparated(List<string> theList)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (string theItem in theList)
+            {
+                sb.AppendLine(theItem + ",");
+            }
 
+            return sb.ToString();
+        }
+        private string toSeparateStatements(string formatString, List<string> theList)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (string theItem in theList)
+            {
+                sb.AppendLine(string.Format(formatString, theItem));
+            }
+
+            return sb.ToString();
+        }
+        private int traverseRobotXML_countObjects(object obj, Type objectType)
+        {
+            int count = 0;
+
+            Type objType = obj.GetType();
+
+            if(obj.GetType() == objectType)
+            {
+                count++;
+            }
+
+            if (isACollection(obj))
+            {
+                ICollection ic = obj as ICollection;
+                foreach (var v in ic)
+                {
+                    count += traverseRobotXML_countObjects(v, objectType);
+                }
+            }
+            else
+            {
+                PropertyInfo[] propertyInfos = objType.GetProperties();
+
+                if ((objType.FullName != "System.String") && (propertyInfos.Length > 0))
+                {
+                    string previousName = "";
+                    foreach (PropertyInfo pi in propertyInfos)
+                    {
+                        object theObj = pi.GetValue(obj);
+
+                        if (theObj != null)
+                        {
+                            // in the generated code each property is followed by a 2nd property with the same name + "Specified"
+                            // we want to skip these
+                            if (pi.Name != previousName + "Specified")
+                            {
+                                count += traverseRobotXML_countObjects(theObj, objectType);
+                                previousName = pi.Name;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // this means that this is a leaf node
+                }
+            }
+
+            return count;
+        }
+        private List<string> traverseRobotXML_getUsageList(object obj, Type objectType)
+        {
+            List<string> usages = new List<string>();
+
+            Type objType = obj.GetType();
+
+            if (obj.GetType() == objectType)
+            {
+                PropertyInfo thePropertyInfo = objType.GetProperties().ToList().Find(p => p.Name == "usage");
+
+                string usageName = "Usage name is missing in the robot xml configuration file";
+                if (thePropertyInfo != null)
+                {
+                    usageName = thePropertyInfo.GetValue(obj).ToString();
+                }
+                
+                usages.Add(usageName);
+            }
+
+            if (isACollection(obj))
+            {
+                ICollection ic = obj as ICollection;
+                foreach (var v in ic)
+                {
+                    usages.AddRange(traverseRobotXML_getUsageList(v, objectType));
+                }
+            }
+            else
+            {
+                PropertyInfo[] propertyInfos = objType.GetProperties();
+
+                if ((objType.FullName != "System.String") && (propertyInfos.Length > 0))
+                {
+                    string previousName = "";
+                    foreach (PropertyInfo pi in propertyInfos)
+                    {
+                        object theObj = pi.GetValue(obj);
+
+                        if (theObj != null)
+                        {
+                            // in the generated code each property is followed by a 2nd property with the same name + "Specified"
+                            // we want to skip these
+                            if (pi.Name != previousName + "Specified")
+                            {
+                                usages.AddRange(traverseRobotXML_getUsageList(theObj, objectType));
+                                previousName = pi.Name;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // this means that this is a leaf node
+                }
+            }
+
+            return usages.Distinct().ToList();
+        }
+        private bool isACollection(object obj)
+        {
+            Type t = obj.GetType();
+            return ((t.Name == "Collection`1") && (t.Namespace == "System.Collections.ObjectModel"));
+        }
+        private string getBaseClassName(int numberOfMotors, int numberOfSolenoids, int numberOfServos, bool state)
+        {
+            string returnValue = "Mech";
+            
+            if(numberOfMotors > 0)
+                returnValue += numberOfMotors + "IndMotor";
+
+            if (numberOfSolenoids > 0)
+                returnValue += numberOfSolenoids + "Solenoid";
+
+            if (numberOfServos > 0)
+                returnValue += numberOfServos + "Servo";
+
+            if (state) 
+                returnValue += "State";
+
+            return returnValue;
+        }
+        private string getMechanismName(string controlFileName)
+        {
+            return Path.GetFileNameWithoutExtension(controlFileName);
+        }
+
+        /// <summary>
+        /// Keep in mind that the number of hand coded sections in the template might be different
+        /// than in the previous file
+        /// </summary>
+        /// <param name="previousContent"></param>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        private string copyHandCodedSections(string previousContent, string template)
+        {
+            string handCodedStart = @"//========= Hand modified code start section (\d+) ========";
+            string handCodedEnd = @"//========= Hand modified code end section (\d+) ========";
+
+            string regex = handCodedStart + "([\\s\\S]*?)" + handCodedEnd;
+            Regex matchesInPreviousFile = new Regex(regex);
+            Regex matchesInTemplateFile = new Regex(regex);
+
+            MatchCollection previousFileMatches = matchesInPreviousFile.Matches(previousContent);
+            MatchCollection templateFileMatches = matchesInPreviousFile.Matches(template);
+
+            if (previousFileMatches.Count > 0)
+            {
+                int allGroupID = 0;
+                int sectionGroupID = 1;
+                //todo add code here to validate that the templates and the regex captures are correct
+
+                List<(int, string)> handCodedSections = new List<(int, string)>();
+                foreach (Match m in previousFileMatches)
+                {
+                    handCodedSections.Add((System.Convert.ToInt32(m.Groups[sectionGroupID].Value), m.Value));
+                }
+
+                //section ID, text start, text length, text
+                List<(int, int, int, string)> templateHandCodedSections = new List<(int, int, int, string)>();
+                foreach (Match m in templateFileMatches)
+                {
+                    templateHandCodedSections.Add((Convert.ToInt32(m.Groups[sectionGroupID].Value),
+                                                    m.Groups[allGroupID].Index, m.Groups[allGroupID].Length,
+                                                    m.Value));
+                }
+
+                foreach ((int, int, int, string) t in templateHandCodedSections.OrderByDescending(t => t.Item2))
+                {
+                    int sectionID = t.Item1;
+                    int startIndex = t.Item2;
+                    int length = t.Item3;
+
+                    (int, string) handCode = handCodedSections.Find(c => c.Item1 == sectionID);
+                    if (handCode != (0, null))
+                        template = template.Remove(startIndex, length).Insert(startIndex, handCode.Item2);
+                }
+            }
+
+            return template;
+        }
+
+        private StringBuilder prepareFile(string fullPathFilename, string template)
+        {
+            StringBuilder sb = new StringBuilder();
+            String updatedFileContents = template;
+
+            if (File.Exists(fullPathFilename))
+            {
+                string oldContent = File.ReadAllText(fullPathFilename);
+                updatedFileContents = copyHandCodedSections(oldContent, template);
+
+                File.Delete(fullPathFilename);
+            }
+
+            sb.AppendLine(updatedFileContents);
+
+            return sb;
+        }
+        private string getMechanismBaseClassName(object mech, bool state)
+        {
+            int numberOfMotors = traverseRobotXML_countObjects(mech, typeof(motor));
+            int numberOfSolenoids = traverseRobotXML_countObjects(mech, typeof(solenoid));
+            int numberOfServos = traverseRobotXML_countObjects(mech, typeof(servo));
+
+            return getBaseClassName(numberOfMotors, numberOfSolenoids, numberOfServos, state);
+        }
+
+        #endregion
     }
 }
