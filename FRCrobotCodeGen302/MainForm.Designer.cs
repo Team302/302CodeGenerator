@@ -347,6 +347,7 @@ namespace FRCrobotCodeGen302
             this.Controls.Add(this.theTabControl);
             this.Name = "MainForm";
             this.Text = "Team 302 code generator";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.configurationGroupBox.ResumeLayout(false);
             this.configurationGroupBox.PerformLayout();
             this.theTabControl.ResumeLayout(false);
