@@ -38,6 +38,8 @@ namespace Configuration
         public string MechanismTypes_h = "";
         public string MechanismTypes_cpp = "";
 
+        public string StateStruc_h = "";
+
         public void loadDummyData()
         {
         }

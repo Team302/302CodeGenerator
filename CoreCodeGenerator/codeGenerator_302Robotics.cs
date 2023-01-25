@@ -74,7 +74,7 @@ namespace CoreCodeGenerator
             string mechanismFolder = Path.Combine(baseFolder, "mechanisms");
 
             writeMechanismTypeFiles(mechanismFolder, generatorConfig);
-
+            writeStateStrucFiles(mechanismFolder, generatorConfig);
         }
         private void writeUsagesFiles(string baseFolder, toolConfiguration generatorConfig)
         {
@@ -156,7 +156,13 @@ namespace CoreCodeGenerator
             writeMechanismTypes_h_File(fullPathFilename_h, generatorConfig.MechanismTypes_h);
             writeMechanismTypes_cpp_File(fullPathFilename_cpp, generatorConfig.MechanismTypes_cpp);
         }
+        private void writeStateStrucFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string baseFileName = Path.Combine(baseFolder, "StateStruc");
+            string fullPathFilename_h = baseFileName + ".h";
 
+            writeStateStruc_h_File(fullPathFilename_h, generatorConfig.StateStruc_h);
+        }
         private void writeStateMgr_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
@@ -169,7 +175,7 @@ namespace CoreCodeGenerator
             for (int i = 0; i < states.Count; i++)
             {
                 enumContentsStr.AppendFormat("{0},\r\n", states[i]);
-                XmlStringToStateEnumMapStr.AppendFormat("\"{0}\", {1}_STATE::{2},\r\n", stateText[i], getMechanismName(mech.controlFile).ToUpper(), states[i]);
+                XmlStringToStateEnumMapStr.AppendFormat("{{\"{0}\", {1}_STATE::{2}}},\r\n", stateText[i], getMechanismName(mech.controlFile).ToUpper(), states[i]);
                 stateStructStr.AppendFormat("const StateStruc m_{2}State = {{ {0}_STATE::{3}, \"{1}\", StateType::{0}_STATE, true }};\r\n",
                     getMechanismName(mech.controlFile).ToUpper(),
                     stateText[i],
@@ -227,9 +233,12 @@ namespace CoreCodeGenerator
                     states[i].ToUpper());
             }
 
-
-            string baseClassName = getMechanismBaseClassName(mech, true);
+            string paramList;
+            string argList;
+            string baseClassName = getMechanismBaseClassName(mech, true, out argList, out paramList);
             sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", paramList);
 
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
@@ -254,8 +263,12 @@ namespace CoreCodeGenerator
                     states[i].ToLower());
             }
 
-            string baseClassName = getMechanismBaseClassName(mech, true);
+            string paramList;
+            string argList;
+            string baseClassName = getMechanismBaseClassName(mech, true, out argList, out paramList);
             sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", paramList);
 
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
             sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
@@ -278,8 +291,12 @@ namespace CoreCodeGenerator
                     states[i].ToLower());
             }
 
-            string baseClassName = getMechanismBaseClassName(mech, false);
+            string paramList;
+            string argList;
+            string baseClassName = getMechanismBaseClassName(mech, false, out argList, out paramList);
             sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", paramList);
 
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
             sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
@@ -308,8 +325,12 @@ namespace CoreCodeGenerator
                     states[i].ToUpper());
             }
 
-            string baseClassName = getMechanismBaseClassName(mech, false);
+            string paramList;
+            string argList;
+            string baseClassName = getMechanismBaseClassName(mech, false, out argList, out paramList);
             sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", paramList);
 
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
@@ -356,6 +377,24 @@ namespace CoreCodeGenerator
 
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
+
+        private void writeStateStruc_h_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder stateStructStr = new StringBuilder();
+            foreach (mechanism m in theRobotConfiguration.theRobot.mechanism)
+            {
+                stateStructStr.AppendLine(getMechanismName(m.controlFile) + "_STATE,");
+            }
+            
+            sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString().ToUpper());
+
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
         #endregion
 
         #region Usage files
@@ -636,11 +675,32 @@ namespace CoreCodeGenerator
 
             return sb;
         }
-        private string getMechanismBaseClassName(object mech, bool state)
+        private string getMechanismBaseClassName(object mech, bool state, out string constructorArgList, out string constructorParamList)
         {
             int numberOfMotors = traverseRobotXML_countObjects(mech, typeof(motor));
             int numberOfSolenoids = traverseRobotXML_countObjects(mech, typeof(solenoid));
             int numberOfServos = traverseRobotXML_countObjects(mech, typeof(servo));
+
+            constructorParamList = "";
+            constructorArgList = ",\r\n";
+
+            for (int i = 0; i < numberOfMotors; i++)
+            {
+                constructorArgList += "std::shared_ptr<IDragonMotorController>     motorController" + i + ",\r\n";
+                constructorParamList += ", motorController" + i;
+            }
+            for (int i = 0; i < numberOfSolenoids; i++)
+            {
+                constructorArgList += "std::shared_ptr<DragonSolenoid>     solenoid" + i + ",\r\n";
+                constructorParamList += ", solenoid" + i;
+            }
+            for (int i = 0; i < numberOfServos; i++)
+            {
+                constructorArgList += "std::shared_ptr<DragonServo>     servo" + i + ",\r\n";
+                constructorParamList += ", servo" + i;
+            }
+
+            constructorArgList = constructorArgList.TrimEnd(new char[] { ',', '\r', '\n' });
 
             return getBaseClassName(numberOfMotors, numberOfSolenoids, numberOfServos, state);
         }
