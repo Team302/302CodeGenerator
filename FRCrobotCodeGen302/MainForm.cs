@@ -22,12 +22,14 @@ namespace FRCrobotCodeGen302
         toolConfiguration generatorConfig = new toolConfiguration();
         robotConfig theRobotConfiguration = new robotConfig();
         codeGenerator_302Robotics codeGenerator = new codeGenerator_302Robotics();
-       
+        bool needsSaving = false;
+
         public MainForm()
         {
             InitializeComponent();
             codeGenerator.setProgressCallback(addProgress);
             theRobotConfiguration.setProgressCallback(addProgress);
+            clearNeedsSaving();
         }
 
         private void addProgress(string info)
@@ -200,8 +202,22 @@ namespace FRCrobotCodeGen302
 
                     configuredOutputFolderLabel.Text = generatorConfig.rootOutputFolder;
                     robotConfigurationFileLabel.Text = generatorConfig.robotConfiguration;
+
+                    clearNeedsSaving();
                 }
             }
+        }
+
+        void setNeedsSaving()
+        {
+            needsSaving = true;
+            saveConfigBbutton.Enabled = needsSaving;
+        }
+
+        void clearNeedsSaving()
+        {
+            needsSaving = false;
+            saveConfigBbutton.Enabled = needsSaving;
         }
 
         TreeNode lastSelectedValueNode = null;
@@ -300,6 +316,8 @@ namespace FRCrobotCodeGen302
                                 prop.SetValue(lastSelectedValueNode.Parent.Tag, valueComboBox.Text);
                             else
                                 prop.SetValue(lastSelectedValueNode.Parent.Tag, Enum.Parse(lnt.type, valueComboBox.Text));
+
+                            setNeedsSaving();
                         }
                     }
                     catch (Exception ex)
@@ -326,6 +344,7 @@ namespace FRCrobotCodeGen302
                         {
                             prop.SetValue(lastSelectedValueNode.Parent.Tag, valueTextBox.Text);
                         }
+                        setNeedsSaving();
                     }
                     catch (Exception ex)
                     {
@@ -350,6 +369,8 @@ namespace FRCrobotCodeGen302
                         {
                             prop.SetValue(lastSelectedValueNode.Parent.Tag, (uint)valueNumericUpDown.Value);
                         }
+
+                        setNeedsSaving() ;
                     }
                     catch (Exception ex)
                     {
@@ -366,6 +387,7 @@ namespace FRCrobotCodeGen302
                 theRobotConfiguration.save(generatorConfig.robotConfiguration);
                 //MessageBox.Show("File saved");
                 addProgress("File saved");
+                clearNeedsSaving();
             }
             catch (Exception ex)
             {
@@ -448,6 +470,23 @@ namespace FRCrobotCodeGen302
             DialogResult dialogResult = form.ShowDialog();
             value = textBox.Text;
             return dialogResult;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(needsSaving)
+            {
+                DialogResult dlgRes = MessageBox.Show("Do you want to save changes?", "302 Code Generator", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                if(dlgRes == DialogResult.Yes)
+                {
+                    saveConfigBbutton_Click(null, null);
+                    clearNeedsSaving();
+                }
+                else if(dlgRes == DialogResult.Cancel) 
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 
