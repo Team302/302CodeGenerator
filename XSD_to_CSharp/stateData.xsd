@@ -61,6 +61,15 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
+      <xs:attribute default="NONE" name="solenoid2">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="NONE" />
+            <xs:enumeration value="ON" />
+            <xs:enumeration value="REVERSE" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 </xs:schema>
