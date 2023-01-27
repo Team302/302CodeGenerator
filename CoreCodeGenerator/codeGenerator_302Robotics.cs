@@ -583,18 +583,24 @@ namespace CoreCodeGenerator
         private string getBaseClassName(int numberOfMotors, int numberOfSolenoids, int numberOfServos, bool state)
         {
             string returnValue = "Mech";
-            
-            if(numberOfMotors > 0)
-                returnValue += numberOfMotors + "IndMotor";
 
-            if (numberOfSolenoids > 0)
-                returnValue += numberOfSolenoids + "Solenoid";
+            returnValue += getNameSnippet(numberOfMotors, "IndMotor");
+            returnValue += getNameSnippet(numberOfSolenoids, "Solenoid");
+            returnValue += getNameSnippet(numberOfServos, "Servo");
 
-            if (numberOfServos > 0)
-                returnValue += numberOfServos + "Servo";
+            return returnValue;
+        }
 
-            if (state) 
-                returnValue += "State";
+        private string getNameSnippet(int actuatorCount, string baseName)
+        {
+            string returnValue = "";
+
+            if (actuatorCount > 0)
+            {
+                returnValue += actuatorCount + baseName;
+                if (actuatorCount > 1)
+                    returnValue += "s";
+            }
 
             return returnValue;
         }
