@@ -339,12 +339,42 @@ namespace StateData
                 _solenoid = value;
             }
         }
+        
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private mechanismTargetsolenoid2 _solenoid2 = StateData.mechanismTargetsolenoid2.NONE;
+        
+        //[System.ComponentModel.DefaultValueAttribute(StateData.mechanismTargetsolenoid2.NONE)]
+        [System.Xml.Serialization.XmlAttributeAttribute("solenoid2")]
+        public mechanismTargetsolenoid2 solenoid2
+        {
+            get
+            {
+                return _solenoid2;
+            }
+            set
+            {
+                _solenoid2 = value;
+            }
+        }
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
     [System.SerializableAttribute()]
     //[System.Xml.Serialization.XmlTypeAttribute("mechanismTargetsolenoid", Namespace="http://tempuri.org/stateData", AnonymousType=true)]
     public enum mechanismTargetsolenoid
+    {
+        
+        NONE,
+        
+        ON,
+        
+        REVERSE,
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
+    [System.SerializableAttribute()]
+    //[System.Xml.Serialization.XmlTypeAttribute("mechanismTargetsolenoid2", Namespace="http://tempuri.org/stateData", AnonymousType=true)]
+    public enum mechanismTargetsolenoid2
     {
         
         NONE,
