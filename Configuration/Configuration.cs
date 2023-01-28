@@ -40,6 +40,8 @@ namespace Configuration
 
         public string StateStruc_h = "";
 
+        public string RobotConfig_h = "";
+
         public void loadDummyData()
         {
         }
