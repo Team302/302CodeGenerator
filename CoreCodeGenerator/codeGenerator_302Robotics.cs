@@ -46,10 +46,13 @@ namespace CoreCodeGenerator
                 statedata sd = theRobotConfiguration.mechanismControlDefinition[mech.controlFile];
 
                 writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
+
+
             }
             
             writeUsagesFiles(rootFolder, generatorConfig);
             writeMechanismsFiles(rootFolder, generatorConfig);
+            writeRobotConfigFiles(rootFolder, generatorConfig);
         }
 
         #region Main generator functions
@@ -78,6 +81,9 @@ namespace CoreCodeGenerator
             writeMechanismTypeFiles(mechanismFolder, generatorConfig);
             writeStateStrucFiles(mechanismFolder, generatorConfig);
         }
+
+    
+
         private void writeUsagesFiles(string baseFolder, toolConfiguration generatorConfig)
         {
             string OutFolder = Path.Combine(baseFolder, "hw", "usages");
@@ -165,6 +171,15 @@ namespace CoreCodeGenerator
 
             writeStateStruc_h_File(fullPathFilename_h, generatorConfig.StateStruc_h);
         }
+
+        private void writeRobotConfigFiles(string baseFolder, toolConfiguration generatorConfig)
+        {
+            string baseFileName = Path.Combine(baseFolder, "RobotConfig");
+            string fullPathFilename_h = baseFileName + ".h";
+
+            writeRobotConfig_h_File(fullPathFilename_h, generatorConfig.RobotConfig_h);
+        }
+
         private void writeStateMgr_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
@@ -436,6 +451,21 @@ namespace CoreCodeGenerator
 
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
+
+
+        private void writeRobotConfig_h_File(string fullPathFilename, string template)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            string chassistype = " CHASSIS_TYPE_SWERVE_CHASSIS";
+
+            sb = sb.Replace("$CHASSIS_TYPE_CONFIG$", chassistype);
+
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
         #endregion
 
         #region Helper functions
