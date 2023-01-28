@@ -1314,9 +1314,9 @@ namespace Robot
         }
         
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private string _countsPerInch = "countsPerDegree\t\t    CDATA\r\n>";
+        private string _countsPerInch = "0";
         
-        //[System.ComponentModel.DefaultValueAttribute("countsPerDegree\t\t    CDATA\r\n>")]
+        //[System.ComponentModel.DefaultValueAttribute("0")]
         [System.Xml.Serialization.XmlAttributeAttribute("countsPerInch")]
         public string countsPerInch
         {
@@ -1327,6 +1327,23 @@ namespace Robot
             set
             {
                 _countsPerInch = value;
+            }
+        }
+        
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private string _countsPerDegree = "0";
+        
+        //[System.ComponentModel.DefaultValueAttribute("0")]
+        [System.Xml.Serialization.XmlAttributeAttribute("countsPerDegree")]
+        public string countsPerDegree
+        {
+            get
+            {
+                return _countsPerDegree;
+            }
+            set
+            {
+                _countsPerDegree = value;
             }
         }
     }
@@ -1853,6 +1870,23 @@ namespace Robot
             set
             {
                 _turn_cruise_vel = value;
+            }
+        }
+        
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private string _countsOnTurnEncoderPerDegreesOnAngleSensor = "1.0";
+        
+        //[System.ComponentModel.DefaultValueAttribute("1.0")]
+        [System.Xml.Serialization.XmlAttributeAttribute("countsOnTurnEncoderPerDegreesOnAngleSensor")]
+        public string countsOnTurnEncoderPerDegreesOnAngleSensor
+        {
+            get
+            {
+                return _countsOnTurnEncoderPerDegreesOnAngleSensor;
+            }
+            set
+            {
+                _countsOnTurnEncoderPerDegreesOnAngleSensor = value;
             }
         }
     }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns="http://tempuri.org/robot" elementFormDefault="qualified" targetNamespace="http://tempuri.org/robot" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="robot">
     <xs:complexType>
@@ -7,9 +7,7 @@
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="pcm" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="pigeon" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="limelight" />
-
         <xs:element ref="chassis" />
-
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="mechanism" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="camera" />
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="roborio" />
@@ -408,6 +406,7 @@
       <xs:attribute default="1.0" name="turn_peak_val" type="xs:string" />
       <xs:attribute default="0.0" name="turn_max_acc" type="xs:string" />
       <xs:attribute default="0.0" name="turn_cruise_vel" type="xs:string" />
+      <xs:attribute default="1.0" name="countsOnTurnEncoderPerDegreesOnAngleSensor" type="xs:string" />
     </xs:complexType>
   </xs:element>
   <xs:element name="mechanism">
@@ -616,7 +615,8 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
-      <xs:attribute default="countsPerDegree&#x9;&#x9;    CDATA&#xD;&#xA;&gt;" name="countsPerInch" type="xs:string" />
+      <xs:attribute default="0" name="countsPerInch" type="xs:string" />
+      <xs:attribute default="0" name="countsPerDegree" type="xs:string" />
     </xs:complexType>
   </xs:element>
   <xs:element name="analogInput">
