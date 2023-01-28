@@ -106,7 +106,7 @@ namespace CoreCodeGenerator
         #region Mechanism files
         private void writeStateMgrFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
-            string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "StateMgr");
+            string baseFileName = Path.Combine(baseFolder, FirstCharSubstring(getMechanismName(mech.controlFile)) + "StateMgr");
             string fullPathFilename_h = baseFileName + ".h";
             string fullPathFilename_cpp = baseFileName + ".cpp";
             string fullPathFilename_User_cpp = baseFileName + "_user.cpp";
@@ -124,7 +124,7 @@ namespace CoreCodeGenerator
         }
         private void writeStateFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
-            string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "State");
+            string baseFileName = Path.Combine(baseFolder, FirstCharSubstring(getMechanismName(mech.controlFile)) + "State");
             string fullPathFilename_h = baseFileName + ".h";
             string fullPathFilename_cpp = baseFileName + ".cpp";
 
@@ -140,7 +140,7 @@ namespace CoreCodeGenerator
         }
         private void writeMainFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
-            string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile));
+            string baseFileName = Path.Combine(baseFolder, FirstCharSubstring(getMechanismName(mech.controlFile)));
             string fullPathFilename_h = baseFileName + ".h";
             string fullPathFilename_cpp = baseFileName + ".cpp";
 
