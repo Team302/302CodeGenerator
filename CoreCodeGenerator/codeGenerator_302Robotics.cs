@@ -18,6 +18,8 @@ namespace CoreCodeGenerator
 {
     public class codeGenerator_302Robotics : baseReportingClass
     {
+        public enum MECHANISM_FILE_TYPE { MAIN, STATE, STATE_MGR }
+
         private robotConfig theRobotConfiguration = new robotConfig();
 
         public void generate(robotConfig theRobotConfig, toolConfiguration generatorConfig)
@@ -186,7 +188,7 @@ namespace CoreCodeGenerator
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
             File.WriteAllText(fullPathFilename, sb.ToString());
@@ -207,7 +209,7 @@ namespace CoreCodeGenerator
             }
 
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
-            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
             File.WriteAllText(fullPathFilename, sb.ToString());
@@ -233,17 +235,17 @@ namespace CoreCodeGenerator
                     states[i].ToUpper());
             }
 
-            string paramList;
-            string argList;
-            string baseClassName = getMechanismBaseClassName(mech, true, out argList, out paramList);
+            string argumentList;
+            string parameterList;
+            string baseClassName = getMechanismBaseClassName(mech, MECHANISM_FILE_TYPE.STATE, out parameterList, out argumentList);
             sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
-            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argList);
-            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", paramList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", parameterList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argumentList);
 
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
             File.WriteAllText(fullPathFilename, sb.ToString());
@@ -263,15 +265,15 @@ namespace CoreCodeGenerator
                     states[i].ToLower());
             }
 
-            string paramList;
-            string argList;
-            string baseClassName = getMechanismBaseClassName(mech, true, out argList, out paramList);
+            string argumentList;
+            string parameterList;
+            string baseClassName = getMechanismBaseClassName(mech, MECHANISM_FILE_TYPE.STATE, out parameterList, out argumentList);
             sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
-            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argList);
-            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", paramList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", parameterList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argumentList);
 
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
-            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
             File.WriteAllText(fullPathFilename, sb.ToString());
@@ -291,15 +293,15 @@ namespace CoreCodeGenerator
                     states[i].ToLower());
             }
 
-            string paramList;
-            string argList;
-            string baseClassName = getMechanismBaseClassName(mech, false, out argList, out paramList);
+            string argumentList;
+            string parameterList;
+            string baseClassName = getMechanismBaseClassName(mech, MECHANISM_FILE_TYPE.MAIN, out parameterList, out argumentList);
             sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
-            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argList);
-            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", paramList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", parameterList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argumentList);
 
             sb = sb.Replace("$STATE_MAP_INITIALIZATION$", stateStructStr.ToString());
-            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
             File.WriteAllText(fullPathFilename, sb.ToString());
@@ -325,17 +327,17 @@ namespace CoreCodeGenerator
                     states[i].ToUpper());
             }
 
-            string paramList;
-            string argList;
-            string baseClassName = getMechanismBaseClassName(mech, false, out argList, out paramList);
+            string argumentList;
+            string parameterList;
+            string baseClassName = getMechanismBaseClassName(mech, MECHANISM_FILE_TYPE.MAIN, out parameterList, out argumentList);
             sb = sb.Replace("$MECH_BASE_CLASS$", baseClassName);
-            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argList);
-            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", paramList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_PARAMETER_LIST$", parameterList);
+            sb = sb.Replace("$MECHANISM_CONSTRUCTOR_ARGUMENT_LIST$", argumentList);
 
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString());
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_STATES$", enumContentsStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
             sb = sb.Replace("$XML_STRING_TO_STATE_ENUM_MAP$", XmlStringToStateEnumMapStr.ToString().Trim(new char[] { ',', '\r', '\n' }));
-            sb = sb.Replace("$MECHANISM_NAME$", getMechanismName(mech.controlFile));
+            sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
             File.WriteAllText(fullPathFilename, sb.ToString());
@@ -437,6 +439,15 @@ namespace CoreCodeGenerator
         #endregion
 
         #region Helper functions
+        private string FirstCharSubstring(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return string.Empty;
+            }
+
+            return $"{input[0].ToString().ToUpper()}{input.Substring(1)}";
+        }
         private string getStateNameFromText(string mechanismName, string stateText)
         {
             string nameUpperCase = mechanismName.ToUpper();
@@ -580,7 +591,7 @@ namespace CoreCodeGenerator
             Type t = obj.GetType();
             return ((t.Name == "Collection`1") && (t.Namespace == "System.Collections.ObjectModel"));
         }
-        private string getBaseClassName(int numberOfMotors, int numberOfSolenoids, int numberOfServos, bool state)
+        private string getBaseClassName(int numberOfMotors, int numberOfSolenoids, int numberOfServos)
         {
             string returnValue = "Mech";
 
@@ -681,34 +692,58 @@ namespace CoreCodeGenerator
 
             return sb;
         }
-        private string getMechanismBaseClassName(object mech, bool state, out string constructorArgList, out string constructorParamList)
+        private string getMechanismBaseClassName(object mech, MECHANISM_FILE_TYPE fileType, out string mainConstructorParameterList, out string mainConstructorArgumentList)
         {
             int numberOfMotors = traverseRobotXML_countObjects(mech, typeof(motor));
             int numberOfSolenoids = traverseRobotXML_countObjects(mech, typeof(solenoid));
             int numberOfServos = traverseRobotXML_countObjects(mech, typeof(servo));
 
-            constructorParamList = "";
-            constructorArgList = ",\r\n";
+            mainConstructorArgumentList = "";
+            mainConstructorParameterList = ",\r\n";
 
             for (int i = 0; i < numberOfMotors; i++)
             {
-                constructorArgList += "std::shared_ptr<IDragonMotorController>     motorController" + i + ",\r\n";
-                constructorParamList += ", motorController" + i;
+                if (fileType == MECHANISM_FILE_TYPE.MAIN)
+                {
+                    mainConstructorParameterList += "std::shared_ptr<IDragonMotorController>     motorController" + i + ",\r\n";
+                    mainConstructorArgumentList += ", motorController" + i;
+                }
+                else if (fileType == MECHANISM_FILE_TYPE.STATE)
+                {
+                    mainConstructorParameterList += "ControlData* control" + i + ",\r\n";
+                    mainConstructorParameterList += "double target" + i + ",\r\n";
+                    mainConstructorArgumentList += ", control" + i + ", target" + i;
+                }
+
             }
             for (int i = 0; i < numberOfSolenoids; i++)
             {
-                constructorArgList += "std::shared_ptr<DragonSolenoid>     solenoid" + i + ",\r\n";
-                constructorParamList += ", solenoid" + i;
+                if (fileType == MECHANISM_FILE_TYPE.MAIN)
+                {
+                    mainConstructorParameterList += "std::shared_ptr<DragonSolenoid>     solenoid" + i + ",\r\n";
+                    mainConstructorArgumentList += ", solenoid" + i;
+                }
+                else if (fileType == MECHANISM_FILE_TYPE.STATE)
+                {
+                    mainConstructorParameterList += "MechanismTargetData::SOLENOID solState" + i + ",\r\n";
+                    mainConstructorArgumentList += ", solState" + i;
+                }
             }
             for (int i = 0; i < numberOfServos; i++)
             {
-                constructorArgList += "std::shared_ptr<DragonServo>     servo" + i + ",\r\n";
-                constructorParamList += ", servo" + i;
+                if (fileType == MECHANISM_FILE_TYPE.MAIN)
+                    mainConstructorParameterList += "std::shared_ptr<DragonServo>     servo" + i + ",\r\n";
+                else if (fileType == MECHANISM_FILE_TYPE.STATE)
+                {
+                    mainConstructorParameterList += "double target" + i + ",\r\n";
+                }
+
+                mainConstructorArgumentList += ", servo" + i;
             }
 
-            constructorArgList = constructorArgList.TrimEnd(new char[] { ',', '\r', '\n' });
+            mainConstructorParameterList = mainConstructorParameterList.TrimEnd(new char[] { ',', '\r', '\n' });
 
-            return getBaseClassName(numberOfMotors, numberOfSolenoids, numberOfServos, state);
+            return getBaseClassName(numberOfMotors, numberOfSolenoids, numberOfServos);
         }
 
         #endregion
