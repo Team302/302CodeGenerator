@@ -39,19 +39,31 @@ namespace CoreCodeGenerator
             }
 
             addProgress("Writing mechanism files...");
+            List<string> mechMainFiles = new List<string>();
+            List<string> mechStateFiles = new List<string>();
+            List<string> mechStateMgrFiles = new List<string>();
+
             foreach (mechanism mech in theRobotConfiguration.theRobot.mechanism)
             {
                 statedata sd = theRobotConfiguration.mechanismControlDefinition[mech.controlFile];
 
-                writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
+                List<string> genFiles = writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
+                if(genFiles.Count == 3)
+                {
+                    //the order needs to be the same as in writeMechanismFiles
+                    mechMainFiles.Add(genFiles[0].Substring(rootFolder.Length).TrimStart('\\'));
+                    mechStateFiles.Add(genFiles[1].Substring(rootFolder.Length).TrimStart('\\'));
+                    mechStateMgrFiles.Add(genFiles[2].Substring(rootFolder.Length).TrimStart('\\'));
+                }
             }
-            
+
+            writeMechAllHFiles(rootFolder, generatorConfig, mechMainFiles, mechStateFiles, mechStateMgrFiles);
             writeUsagesFiles(rootFolder, generatorConfig);
             writeMechanismsFiles(rootFolder, generatorConfig);
         }
 
         #region Main generator functions
-        private void writeMechanismFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
+        private List<string> writeMechanismFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string mechanismFolder = Path.Combine(baseFolder, "mechanisms", getMechanismName(mech.controlFile));
 
@@ -63,11 +75,12 @@ namespace CoreCodeGenerator
             else
                 addProgress("Output directory " + mechanismFolder + " already exists");
 
-            writeStateMgrFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
-            writeStateFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
-            writeMainFiles(mechanismFolder, generatorConfig, mech, mechanismStateData);
-            
+            List<string> filePathnames = new List<string>();
+            filePathnames.Add(writeMainFiles(mechanismFolder, generatorConfig, mech, mechanismStateData));
+            filePathnames.Add(writeStateFiles(mechanismFolder, generatorConfig, mech, mechanismStateData));
+            filePathnames.Add(writeStateMgrFiles(mechanismFolder, generatorConfig, mech, mechanismStateData));
 
+            return filePathnames;
         }
         private void writeMechanismsFiles(string baseFolder, toolConfiguration generatorConfig)
         {
@@ -93,10 +106,19 @@ namespace CoreCodeGenerator
             writeXXXUsageFiles(OutFolder, generatorConfig.DigitalInputUsage_h, generatorConfig.DigitalInputUsage_cpp, "DigitalInputUsage", typeof(digitalInput), "DIGITAL_SENSOR");
             writeXXXUsageFiles(OutFolder, generatorConfig.ServoUsage_h, generatorConfig.ServoUsage_cpp, "ServoUsage", typeof(servo), "SERVO");
         }
+        private void writeMechAllHFiles(string baseFolder, toolConfiguration generatorConfig, List<string> mechMainFiles, List<string> mechStateFiles, List<string> mechStateMgrFiles)
+        {
+            string mechanismFolder = Path.Combine(baseFolder, "mechanisms");
+
+            writeMechanisms_h_File(Path.Combine(mechanismFolder, "allMechanismIncludes.h"), generatorConfig.AllMechanisms_h, mechMainFiles);
+            writeMechanisms_h_File(Path.Combine(mechanismFolder, "allMechanismStateIncludes.h"), generatorConfig.AllMechanismsState_h, mechStateFiles);
+            writeMechanisms_h_File(Path.Combine(mechanismFolder, "allMechanismStateMgrIncludes.h"), generatorConfig.AllMechanismsStateMgr_h, mechStateMgrFiles);
+        }
+
         #endregion
 
         #region Mechanism files
-        private void writeStateMgrFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
+        private string writeStateMgrFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "StateMgr");
             string fullPathFilename_h = baseFileName + ".h";
@@ -113,8 +135,10 @@ namespace CoreCodeGenerator
 
             writeStateMgr_h_File(fullPathFilename_h, generatorConfig.stateManager_h, mech, mechanismStateData, states, stateText);
             writeStateMgr_cpp_File(fullPathFilename_cpp, generatorConfig.stateManager_cpp, mech, mechanismStateData, states, stateText);
+
+            return baseFileName;
         }
-        private void writeStateFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
+        private string writeStateFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile) + "State");
             string fullPathFilename_h = baseFileName + ".h";
@@ -129,8 +153,10 @@ namespace CoreCodeGenerator
             }
             writeState_h_File(fullPathFilename_h, generatorConfig.state_h, mech, mechanismStateData, states, stateText);
             writeState_cpp_File(fullPathFilename_cpp, generatorConfig.state_cpp, mech, mechanismStateData, states, stateText);
+
+            return baseFileName;
         }
-        private void writeMainFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
+        private string writeMainFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
             string baseFileName = Path.Combine(baseFolder, getMechanismName(mech.controlFile));
             string fullPathFilename_h = baseFileName + ".h";
@@ -145,6 +171,8 @@ namespace CoreCodeGenerator
             }
             writeMain_h_File(fullPathFilename_h, generatorConfig.main_h, mech, mechanismStateData, states, stateText);
             writeMain_cpp_File(fullPathFilename_cpp, generatorConfig.main_cpp, mech, mechanismStateData, states, stateText);
+
+            return baseFileName;
         }
         private void writeMechanismTypeFiles(string baseFolder, toolConfiguration generatorConfig)
         {
@@ -392,6 +420,24 @@ namespace CoreCodeGenerator
             
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString().ToUpper());
 
+            File.WriteAllText(fullPathFilename, sb.ToString());
+        }
+
+        private void writeMechanisms_h_File(string fullPathFilename, string template, List<string> hFilesToInclude)
+        {
+            addProgress("Generating " + fullPathFilename);
+
+            StringBuilder sb = prepareFile(fullPathFilename, template);
+
+            StringBuilder contentsStr = new StringBuilder();
+
+
+            foreach (string f in hFilesToInclude)
+            {
+                string mechanmismFile = f;
+                contentsStr.AppendLine("#include <" + mechanmismFile + ".h>");
+            }
+            sb = sb.Replace("$INCLUDES_FOR_ALL_MECHANISMS$", contentsStr.ToString());
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 

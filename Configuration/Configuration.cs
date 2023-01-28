@@ -14,6 +14,10 @@ namespace Configuration
         public string rootOutputFolder = "";
         public string robotConfiguration = "";
 
+        public string AllMechanisms_h = "";
+        public string AllMechanismsState_h = "";
+        public string AllMechanismsStateMgr_h = "";
+
         public string stateManager_h = "";
         public string stateManager_cpp = "";
 
