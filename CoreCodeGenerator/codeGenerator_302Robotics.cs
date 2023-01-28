@@ -96,10 +96,10 @@ namespace CoreCodeGenerator
             else
                 addProgress("Output directory " + OutFolder + " already exists");
 
-            writeXXXUsageFiles(OutFolder, generatorConfig.SolenoidUsage_h, generatorConfig.SolenoidUsage_cpp, "SolenoidUsage", typeof(solenoid), "SOLENOID");
-            writeXXXUsageFiles(OutFolder, generatorConfig.MotorControllerUsage_h, generatorConfig.MotorControllerUsage_cpp, "MotorControllerUsage", typeof(motor), "MOTOR_CONTROLLER");
-            writeXXXUsageFiles(OutFolder, generatorConfig.DigitalInputUsage_h, generatorConfig.DigitalInputUsage_cpp, "DigitalInputUsage", typeof(digitalInput), "DIGITAL_SENSOR");
-            writeXXXUsageFiles(OutFolder, generatorConfig.ServoUsage_h, generatorConfig.ServoUsage_cpp, "ServoUsage", typeof(servo), "SERVO");
+            writeXXXUsageFiles(OutFolder, generatorConfig.SolenoidUsage_h, generatorConfig.SolenoidUsage_cpp, "SolenoidUsage", generatorConfig, typeof(solenoid), "SOLENOID");
+            writeXXXUsageFiles(OutFolder, generatorConfig.MotorControllerUsage_h, generatorConfig.MotorControllerUsage_cpp, "MotorControllerUsage", generatorConfig, typeof(motor), "MOTOR_CONTROLLER");
+            writeXXXUsageFiles(OutFolder, generatorConfig.DigitalInputUsage_h, generatorConfig.DigitalInputUsage_cpp, "DigitalInputUsage", generatorConfig, typeof(digitalInput), "DIGITAL_SENSOR");
+            writeXXXUsageFiles(OutFolder, generatorConfig.ServoUsage_h, generatorConfig.ServoUsage_cpp, "ServoUsage", generatorConfig, typeof(servo), "SERVO");
         }
         #endregion
 
@@ -119,8 +119,8 @@ namespace CoreCodeGenerator
                 stateText.Add(mt.stateIdentifier.ToString());
             }
 
-            writeStateMgr_h_File(fullPathFilename_h, generatorConfig.stateManager_h, mech, mechanismStateData, states, stateText);
-            writeStateMgr_cpp_File(fullPathFilename_cpp, generatorConfig.stateManager_cpp, mech, mechanismStateData, states, stateText);
+            writeStateMgr_h_File(fullPathFilename_h, generatorConfig.stateManager_h, generatorConfig, mech, mechanismStateData, states, stateText);
+            writeStateMgr_cpp_File(fullPathFilename_cpp, generatorConfig.stateManager_cpp, mech, generatorConfig, mechanismStateData, states, stateText);
         }
         private void writeStateFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
@@ -135,8 +135,8 @@ namespace CoreCodeGenerator
                 states.Add(getStateNameFromText(getMechanismName(mech.controlFile), mt.stateIdentifier.ToString()));
                 stateText.Add(mt.stateIdentifier.ToString());
             }
-            writeState_h_File(fullPathFilename_h, generatorConfig.state_h, mech, mechanismStateData, states, stateText);
-            writeState_cpp_File(fullPathFilename_cpp, generatorConfig.state_cpp, mech, mechanismStateData, states, stateText);
+            writeState_h_File(fullPathFilename_h, generatorConfig.state_h, mech, generatorConfig, mechanismStateData, states, stateText);
+            writeState_cpp_File(fullPathFilename_cpp, generatorConfig.state_cpp, mech, generatorConfig, mechanismStateData, states, stateText);
         }
         private void writeMainFiles(string baseFolder, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData)
         {
@@ -151,8 +151,8 @@ namespace CoreCodeGenerator
                 states.Add(getStateNameFromText(getMechanismName(mech.controlFile), mt.stateIdentifier.ToString()));
                 stateText.Add(mt.stateIdentifier.ToString());
             }
-            writeMain_h_File(fullPathFilename_h, generatorConfig.main_h, mech, mechanismStateData, states, stateText);
-            writeMain_cpp_File(fullPathFilename_cpp, generatorConfig.main_cpp, mech, mechanismStateData, states, stateText);
+            writeMain_h_File(fullPathFilename_h, generatorConfig.main_h, mech, generatorConfig, mechanismStateData, states, stateText);
+            writeMain_cpp_File(fullPathFilename_cpp, generatorConfig.main_cpp, mech, generatorConfig, mechanismStateData, states, stateText);
         }
         private void writeMechanismTypeFiles(string baseFolder, toolConfiguration generatorConfig)
         {
@@ -161,15 +161,15 @@ namespace CoreCodeGenerator
             string fullPathFilename_cpp = baseFileName + ".cpp";
            
 
-            writeMechanismTypes_h_File(fullPathFilename_h, generatorConfig.MechanismTypes_h);
-            writeMechanismTypes_cpp_File(fullPathFilename_cpp, generatorConfig.MechanismTypes_cpp);
+            writeMechanismTypes_h_File(fullPathFilename_h, generatorConfig.MechanismTypes_h, generatorConfig);
+            writeMechanismTypes_cpp_File(fullPathFilename_cpp, generatorConfig.MechanismTypes_cpp, generatorConfig);
         }
         private void writeStateStrucFiles(string baseFolder, toolConfiguration generatorConfig)
         {
             string baseFileName = Path.Combine(baseFolder, "StateStruc");
             string fullPathFilename_h = baseFileName + ".h";
 
-            writeStateStruc_h_File(fullPathFilename_h, generatorConfig.StateStruc_h);
+            writeStateStruc_h_File(fullPathFilename_h, generatorConfig.StateStruc_h, generatorConfig);
         }
 
         private void writeRobotConfigFiles(string baseFolder, toolConfiguration generatorConfig)
@@ -177,15 +177,16 @@ namespace CoreCodeGenerator
             string baseFileName = Path.Combine(baseFolder, "RobotConfig");
             string fullPathFilename_h = baseFileName + ".h";
 
-            writeRobotConfig_h_File(fullPathFilename_h, generatorConfig.RobotConfig_h);
+            writeRobotConfig_h_File(fullPathFilename_h, generatorConfig.RobotConfig_h, generatorConfig);
         }
 
-        private void writeStateMgr_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+
+        private void writeStateMgr_h_File(string fullPathFilename, string template, toolConfiguration generatorConfig, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
-
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
+            
             StringBuilder enumContentsStr = new StringBuilder();
             StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
             StringBuilder stateStructStr = new StringBuilder();
@@ -209,11 +210,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeStateMgr_cpp_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        private void writeStateMgr_cpp_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             StringBuilder stateStructStr = new StringBuilder();
             for (int i = 0; i < states.Count; i++)
@@ -230,11 +231,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeState_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        private void writeState_h_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             StringBuilder enumContentsStr = new StringBuilder();
             StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
@@ -266,11 +267,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeState_cpp_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        private void writeState_cpp_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             StringBuilder stateStructStr = new StringBuilder();
             for (int i = 0; i < states.Count; i++)
@@ -294,11 +295,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeMain_cpp_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        private void writeMain_cpp_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             StringBuilder stateStructStr = new StringBuilder();
             for (int i = 0; i < states.Count; i++)
@@ -322,11 +323,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeMain_h_File(string fullPathFilename, string template, mechanism mech, statedata mechanismStateData, List<string> states, List<string> stateText)
+        private void writeMain_h_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             StringBuilder enumContentsStr = new StringBuilder();
             StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
@@ -358,11 +359,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeMechanismTypes_h_File(string fullPathFilename, string template)
+        private void writeMechanismTypes_h_File(string fullPathFilename, string template, toolConfiguration generatorConfig)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             StringBuilder enumContentsStr = new StringBuilder();
 
@@ -376,11 +377,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeMechanismTypes_cpp_File(string fullPathFilename, string template)
+        private void writeMechanismTypes_cpp_File(string fullPathFilename, string template, toolConfiguration generatorConfig)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             StringBuilder XmlStringToEnumMapStr = new StringBuilder();
 
@@ -395,11 +396,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeStateStruc_h_File(string fullPathFilename, string template)
+        private void writeStateStruc_h_File(string fullPathFilename, string template, toolConfiguration generatorConfig)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             StringBuilder stateStructStr = new StringBuilder();
             foreach (mechanism m in theRobotConfiguration.theRobot.mechanism)
@@ -415,20 +416,20 @@ namespace CoreCodeGenerator
         #endregion
 
         #region Usage files
-        private void writeXXXUsageFiles(string baseFolder, string template_h, string template_cpp, string filenameWithoutExtension, Type objectType, string usageName)
+        private void writeXXXUsageFiles(string baseFolder, string template_h, string template_cpp, string filenameWithoutExtension, toolConfiguration generatorConfig,Type objectType, string usageName)
         {
             string baseFileName = Path.Combine(baseFolder, filenameWithoutExtension);
             string fullPathFilename_h = baseFileName + ".h";
             string fullPathFilename_cpp = baseFileName + ".cpp";
 
-            writeXXXUsage_h_File(fullPathFilename_h, template_h, objectType);
-            writeXXXUsage_cpp_File(fullPathFilename_cpp, template_cpp, objectType, usageName);
+            writeXXXUsage_h_File(fullPathFilename_h, template_h, generatorConfig, objectType);
+            writeXXXUsage_cpp_File(fullPathFilename_cpp, template_cpp, generatorConfig, objectType, usageName);
         }
-        private void writeXXXUsage_h_File(string fullPathFilename, string template, Type objectType)
+        private void writeXXXUsage_h_File(string fullPathFilename, string template, toolConfiguration generatorConfig, Type objectType)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             List<string> usages = traverseRobotXML_getUsageList(theRobotConfiguration.theRobot, objectType);
             string enumContentsStr = toCommaSeparated(usages);
@@ -438,11 +439,11 @@ namespace CoreCodeGenerator
             File.WriteAllText(fullPathFilename, sb.ToString());
         }
 
-        private void writeXXXUsage_cpp_File(string fullPathFilename, string template, Type objectType, string usageName)
+        private void writeXXXUsage_cpp_File(string fullPathFilename, string template, toolConfiguration generatorConfig, Type objectType, string usageName)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             List<string> usages = traverseRobotXML_getUsageList(theRobotConfiguration.theRobot, objectType);
             string contentsStr = toSeparateStatements("m_usageMap[\"{0}\"] = " + usageName + "_USAGE::{0};", usages);
@@ -453,11 +454,11 @@ namespace CoreCodeGenerator
         }
 
 
-        private void writeRobotConfig_h_File(string fullPathFilename, string template)
+        private void writeRobotConfig_h_File(string fullPathFilename, string template, toolConfiguration generatorConfig)
         {
             addProgress("Generating " + fullPathFilename);
 
-            StringBuilder sb = prepareFile(fullPathFilename, template);
+            StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
 
             string chassistype = " CHASSIS_TYPE_SWERVE_CHASSIS";
 
@@ -705,7 +706,7 @@ namespace CoreCodeGenerator
             return template;
         }
 
-        private StringBuilder prepareFile(string fullPathFilename, string template)
+        private StringBuilder prepareFile(string fullPathFilename, string template, toolConfiguration generatorConfig)
         {
             StringBuilder sb = new StringBuilder();
             String updatedFileContents = template;
@@ -718,7 +719,10 @@ namespace CoreCodeGenerator
                 File.Delete(fullPathFilename);
             }
 
+            sb.AppendLine(generatorConfig.CopyrightNotice.Trim());
+            sb.AppendLine(generatorConfig.GenerationNotice.Trim());
             sb.AppendLine(updatedFileContents);
+           
 
             return sb;
         }

@@ -42,6 +42,10 @@ namespace Configuration
 
         public string RobotConfig_h = "";
 
+        public string CopyrightNotice = "";
+
+        public string GenerationNotice = ""; 
+
         public void loadDummyData()
         {
         }
