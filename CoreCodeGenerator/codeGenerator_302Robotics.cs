@@ -110,9 +110,9 @@ namespace CoreCodeGenerator
         {
             string mechanismFolder = Path.Combine(baseFolder, "mechanisms");
 
-            writeMechanisms_h_File(Path.Combine(mechanismFolder, "allMechanismIncludes.h"), generatorConfig.AllMechanisms_h, mechMainFiles);
-            writeMechanisms_h_File(Path.Combine(mechanismFolder, "allMechanismStateIncludes.h"), generatorConfig.AllMechanismsState_h, mechStateFiles);
-            writeMechanisms_h_File(Path.Combine(mechanismFolder, "allMechanismStateMgrIncludes.h"), generatorConfig.AllMechanismsStateMgr_h, mechStateMgrFiles);
+            writeMechanisms_h_File(Path.Combine(mechanismFolder, "AllMechanismIncludes.h"), generatorConfig.AllMechanisms_h, mechMainFiles);
+            writeMechanisms_h_File(Path.Combine(mechanismFolder, "AllMechanismStateIncludes.h"), generatorConfig.AllMechanismsState_h, mechStateFiles);
+            writeMechanisms_h_File(Path.Combine(mechanismFolder, "AllMechanismStateMgrIncludes.h"), generatorConfig.AllMechanismsStateMgr_h, mechStateMgrFiles);
         }
 
         #endregion
