@@ -37,8 +37,8 @@ namespace FRCrobotCodeGen302
             this.configuredOutputFolderLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.robotConfigurationFileLabel = new System.Windows.Forms.Label();
             this.configurationGroupBox = new System.Windows.Forms.GroupBox();
+            this.robotConfigurationFileComboBox = new System.Windows.Forms.ComboBox();
             this.progressTextBox = new System.Windows.Forms.TextBox();
             this.theTabControl = new System.Windows.Forms.TabControl();
             this.tabMainPage = new System.Windows.Forms.TabPage();
@@ -89,7 +89,7 @@ namespace FRCrobotCodeGen302
             // configurationBrowseButton
             // 
             this.configurationBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.configurationBrowseButton.Location = new System.Drawing.Point(787, 16);
+            this.configurationBrowseButton.Location = new System.Drawing.Point(787, 14);
             this.configurationBrowseButton.Margin = new System.Windows.Forms.Padding(8);
             this.configurationBrowseButton.Name = "configurationBrowseButton";
             this.configurationBrowseButton.Size = new System.Drawing.Size(85, 36);
@@ -103,18 +103,18 @@ namespace FRCrobotCodeGen302
             this.configurationFilePathNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.configurationFilePathNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.configurationFilePathNameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.configurationFilePathNameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.configurationFilePathNameTextBox.Location = new System.Drawing.Point(179, 16);
             this.configurationFilePathNameTextBox.Multiline = true;
             this.configurationFilePathNameTextBox.Name = "configurationFilePathNameTextBox";
-            this.configurationFilePathNameTextBox.Size = new System.Drawing.Size(594, 36);
+            this.configurationFilePathNameTextBox.Size = new System.Drawing.Size(594, 33);
             this.configurationFilePathNameTextBox.TabIndex = 4;
             // 
             // outputFolderLabel
             // 
             this.outputFolderLabel.AutoSize = true;
             this.outputFolderLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outputFolderLabel.Location = new System.Drawing.Point(26, 40);
+            this.outputFolderLabel.Location = new System.Drawing.Point(26, 39);
             this.outputFolderLabel.Name = "outputFolderLabel";
             this.outputFolderLabel.Size = new System.Drawing.Size(124, 25);
             this.outputFolderLabel.TabIndex = 5;
@@ -127,7 +127,7 @@ namespace FRCrobotCodeGen302
             this.configuredOutputFolderLabel.BackColor = System.Drawing.SystemColors.Control;
             this.configuredOutputFolderLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.configuredOutputFolderLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.configuredOutputFolderLabel.Location = new System.Drawing.Point(164, 40);
+            this.configuredOutputFolderLabel.Location = new System.Drawing.Point(164, 39);
             this.configuredOutputFolderLabel.Name = "configuredOutputFolderLabel";
             this.configuredOutputFolderLabel.Size = new System.Drawing.Size(682, 29);
             this.configuredOutputFolderLabel.TabIndex = 5;
@@ -135,10 +135,10 @@ namespace FRCrobotCodeGen302
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(6, 17);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(26, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(167, 29);
+            this.label1.Size = new System.Drawing.Size(135, 25);
             this.label1.TabIndex = 6;
             this.label1.Text = "Gen config file";
             // 
@@ -146,39 +146,39 @@ namespace FRCrobotCodeGen302
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(26, 86);
+            this.label2.Location = new System.Drawing.Point(30, 85);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(120, 25);
             this.label2.TabIndex = 5;
             this.label2.Text = "Robot config";
             // 
-            // robotConfigurationFileLabel
-            // 
-            this.robotConfigurationFileLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.robotConfigurationFileLabel.BackColor = System.Drawing.SystemColors.Control;
-            this.robotConfigurationFileLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.robotConfigurationFileLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.robotConfigurationFileLabel.Location = new System.Drawing.Point(164, 86);
-            this.robotConfigurationFileLabel.Name = "robotConfigurationFileLabel";
-            this.robotConfigurationFileLabel.Size = new System.Drawing.Size(682, 29);
-            this.robotConfigurationFileLabel.TabIndex = 7;
-            // 
             // configurationGroupBox
             // 
             this.configurationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.configurationGroupBox.Controls.Add(this.robotConfigurationFileLabel);
+            this.configurationGroupBox.Controls.Add(this.robotConfigurationFileComboBox);
             this.configurationGroupBox.Controls.Add(this.configuredOutputFolderLabel);
             this.configurationGroupBox.Controls.Add(this.label2);
             this.configurationGroupBox.Controls.Add(this.outputFolderLabel);
             this.configurationGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.configurationGroupBox.Location = new System.Drawing.Point(11, 63);
+            this.configurationGroupBox.Location = new System.Drawing.Point(11, 55);
             this.configurationGroupBox.Name = "configurationGroupBox";
-            this.configurationGroupBox.Size = new System.Drawing.Size(861, 124);
+            this.configurationGroupBox.Size = new System.Drawing.Size(861, 132);
             this.configurationGroupBox.TabIndex = 8;
             this.configurationGroupBox.TabStop = false;
             this.configurationGroupBox.Text = "Configuration";
+            // 
+            // robotConfigurationFileComboBox
+            // 
+            this.robotConfigurationFileComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.robotConfigurationFileComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.robotConfigurationFileComboBox.FormattingEnabled = true;
+            this.robotConfigurationFileComboBox.Location = new System.Drawing.Point(164, 81);
+            this.robotConfigurationFileComboBox.Name = "robotConfigurationFileComboBox";
+            this.robotConfigurationFileComboBox.Size = new System.Drawing.Size(682, 33);
+            this.robotConfigurationFileComboBox.TabIndex = 8;
+            this.robotConfigurationFileComboBox.TextChanged += new System.EventHandler(this.robotConfigurationFileComboBox_TextChanged);
             // 
             // progressTextBox
             // 
@@ -375,7 +375,6 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.Label configuredOutputFolderLabel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label robotConfigurationFileLabel;
         private System.Windows.Forms.GroupBox configurationGroupBox;
         private System.Windows.Forms.TextBox progressTextBox;
         private System.Windows.Forms.TabControl theTabControl;
@@ -390,6 +389,7 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.NumericUpDown valueNumericUpDown;
         private System.Windows.Forms.Button addTreeElementButton;
         private System.Windows.Forms.Button addStateDataFileButton;
+        private System.Windows.Forms.ComboBox robotConfigurationFileComboBox;
     }
 }
 

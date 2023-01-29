@@ -13,6 +13,7 @@ namespace Configuration
     {
         public string rootOutputFolder = "";
         public string robotConfiguration = "";
+        public List<string> robotConfigurations = new List<string>();
 
         public string stateManager_h = "";
         public string stateManager_cpp = "";

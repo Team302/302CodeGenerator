@@ -23,6 +23,7 @@ namespace FRCrobotCodeGen302
         robotConfig theRobotConfiguration = new robotConfig();
         codeGenerator_302Robotics codeGenerator = new codeGenerator_302Robotics();
         bool needsSaving = false;
+        bool loadRobotConfig = false;
 
         public MainForm()
         {
@@ -140,6 +141,12 @@ namespace FRCrobotCodeGen302
             try
             {
                 generatorConfig = (toolConfiguration)generatorConfig.deserialize(configurationFullPathName);
+                if(generatorConfig.robotConfigurations.Count == 0)
+                {
+                    generatorConfig.robotConfigurations = new List<string>();
+                    if(!string.IsNullOrEmpty(generatorConfig.robotConfiguration.Trim()))
+                        generatorConfig.robotConfigurations.Add(generatorConfig.robotConfiguration.Trim());
+                }
             }
             catch (Exception ex)
             {
@@ -180,30 +187,80 @@ namespace FRCrobotCodeGen302
 
         private void configurationBrowseButton_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog dlg = new OpenFileDialog())
+            try
             {
-                if (dlg.ShowDialog() == DialogResult.OK)
+                using (OpenFileDialog dlg = new OpenFileDialog())
                 {
-                    configurationFilePathNameTextBox.Text = dlg.FileName;
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        configurationFilePathNameTextBox.Text = dlg.FileName;
 
-                    addProgress("Loading the generator configuration file " + configurationFilePathNameTextBox.Text);
-                    loadGeneratorConfig(configurationFilePathNameTextBox.Text);
-                    addProgress("Configuration file loaded.");
+                        addProgress("Loading the generator configuration file " + configurationFilePathNameTextBox.Text);
+                        loadGeneratorConfig(configurationFilePathNameTextBox.Text);
+                        addProgress("Configuration file loaded.");
 
-                    generatorConfig.rootOutputFolder = Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), generatorConfig.rootOutputFolder);
-                    generatorConfig.robotConfiguration = Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), generatorConfig.robotConfiguration);
+                        loadRobotConfig = false;
+                        #region Load the Combobox with the robot configuration file list and select the first one
+                        robotConfigurationFileComboBox.Items.Clear();
+                        foreach (string f in generatorConfig.robotConfigurations)
+                        {
+                            string fullfilePath = Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), f);
+                            fullfilePath = Path.GetFullPath(fullfilePath);
+                            robotConfigurationFileComboBox.Items.Add(fullfilePath);
+                        }
+                        if (robotConfigurationFileComboBox.Items.Count > 0)
+                            robotConfigurationFileComboBox.SelectedIndex = 0;
+                        #endregion
 
-                    theRobotConfiguration.load(generatorConfig.robotConfiguration);
+                        generatorConfig.rootOutputFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), generatorConfig.rootOutputFolder));
+                        generatorConfig.robotConfiguration = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), robotConfigurationFileComboBox.Text));
+                        loadRobotConfig = true;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                addProgress("Issue encountered while loading the generator configuration file\r\n" + ex.ToString());   
+            }
 
+            robotConfigurationFileComboBox_TextChanged(null, null);
+        }
 
-                    addProgress("Populating the robot configuration tree view.");
-                    populateTree(theRobotConfiguration);
-                    addProgress("... Tree view populated.");
+        private void robotConfigurationFileComboBox_TextChanged(object sender, EventArgs e)
+        {
+            if (loadRobotConfig)
+            {
+                try
+                {
+                    generatorConfig.robotConfiguration = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), robotConfigurationFileComboBox.Text));
+
+                    try
+                    {
+                        theRobotConfiguration.load(generatorConfig.robotConfiguration);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Issue encountered while loading the robot configuration file\r\n" + ex.ToString());
+                    }
+
+                    try
+                    {
+                        addProgress("Populating the robot configuration tree view.");
+                        populateTree(theRobotConfiguration);
+                        addProgress("... Tree view populated.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Issue encountered while populating the robot configuration tree view\r\n" + ex.ToString());
+                    }
 
                     configuredOutputFolderLabel.Text = generatorConfig.rootOutputFolder;
-                    robotConfigurationFileLabel.Text = generatorConfig.robotConfiguration;
 
                     clearNeedsSaving();
+                }
+                catch (Exception ex)
+                {
+                    addProgress(ex.ToString());
                 }
             }
         }
@@ -488,6 +545,8 @@ namespace FRCrobotCodeGen302
                 }
             }
         }
+
+
     }
 
     class leafNodeTag
