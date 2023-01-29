@@ -52,6 +52,7 @@ namespace FRCrobotCodeGen302
             this.saveConfigBbutton = new System.Windows.Forms.Button();
             this.valueComboBox = new System.Windows.Forms.ComboBox();
             this.valueTextBox = new System.Windows.Forms.TextBox();
+            this.clearReportButton = new System.Windows.Forms.Button();
             this.configurationGroupBox.SuspendLayout();
             this.theTabControl.SuspendLayout();
             this.tabMainPage.SuspendLayout();
@@ -84,6 +85,7 @@ namespace FRCrobotCodeGen302
             this.button2.TabIndex = 1;
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // configurationBrowseButton
@@ -206,6 +208,7 @@ namespace FRCrobotCodeGen302
             // 
             // tabMainPage
             // 
+            this.tabMainPage.Controls.Add(this.clearReportButton);
             this.tabMainPage.Controls.Add(this.button2);
             this.tabMainPage.Controls.Add(this.label1);
             this.tabMainPage.Controls.Add(this.button1);
@@ -339,6 +342,16 @@ namespace FRCrobotCodeGen302
             this.valueTextBox.Visible = false;
             this.valueTextBox.TextChanged += new System.EventHandler(this.valueTextBox_TextChanged);
             // 
+            // clearReportButton
+            // 
+            this.clearReportButton.Location = new System.Drawing.Point(11, 404);
+            this.clearReportButton.Name = "clearReportButton";
+            this.clearReportButton.Size = new System.Drawing.Size(185, 49);
+            this.clearReportButton.TabIndex = 10;
+            this.clearReportButton.Text = "Clear report window";
+            this.clearReportButton.UseVisualStyleBackColor = true;
+            this.clearReportButton.Click += new System.EventHandler(this.clearReportButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -390,6 +403,7 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.Button addTreeElementButton;
         private System.Windows.Forms.Button addStateDataFileButton;
         private System.Windows.Forms.ComboBox robotConfigurationFileComboBox;
+        private System.Windows.Forms.Button clearReportButton;
     }
 }
 

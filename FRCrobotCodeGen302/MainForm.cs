@@ -546,7 +546,10 @@ namespace FRCrobotCodeGen302
             }
         }
 
-
+        private void clearReportButton_Click(object sender, EventArgs e)
+        {
+            progressTextBox.Clear();
+        }
     }
 
     class leafNodeTag
