@@ -118,7 +118,7 @@ namespace FRCrobotCodeGen302
                 else
                 {
                     // this means that this is a leaf node
-                    leafNodeTag lnt = new leafNodeTag(obj.GetType(), nodeName);
+                    leafNodeTag lnt = new leafNodeTag(obj.GetType(), nodeName, obj);
                     tn.Tag = lnt;
                 }
             }
@@ -203,6 +203,7 @@ namespace FRCrobotCodeGen302
                     configuredOutputFolderLabel.Text = generatorConfig.rootOutputFolder;
                     robotConfigurationFileLabel.Text = generatorConfig.robotConfiguration;
 
+                    deleteTreeElementButton.Enabled = false;
                     clearNeedsSaving();
                 }
             }
@@ -231,11 +232,12 @@ namespace FRCrobotCodeGen302
             addTreeElementButton.Visible = false;
 
             lastSelectedArrayNode = null;
-            lastSelectedValueNode= null;    
+            lastSelectedValueNode= null;
+
+            deleteTreeElementButton.Enabled = isDeletable(e.Node);
 
             if (e.Node.Tag != null)
-            {
-
+            {   
                 if (isACollection( e.Node.Tag))
                 {
                     lastSelectedArrayNode = e.Node;
@@ -488,17 +490,57 @@ namespace FRCrobotCodeGen302
                 }
             }
         }
+
+        private bool isDeletable(TreeNode tn)
+        {
+            TreeNode parent = tn.Parent;
+            if (parent != null)
+            {
+                if(parent.Tag != null)
+                    return isACollection(parent.Tag);
+            }
+            return false;
+        }
+        private void deleteTreeElementButton_Click(object sender, EventArgs e)
+        {
+            // The delete button will be disabled if the highlighted tree item cannot be deleted
+            // Only a member of a collection can be deleted
+            TreeNode tn = robotTreeView.SelectedNode;
+            if(isDeletable(tn))
+            {
+                TreeNode parent = tn.Parent;
+                if (parent != null)
+                {
+                    if( (parent.Tag != null) && (tn.Tag != null) )
+                    {
+
+                        object theObjectToDelete = tn.Tag;
+                        if (tn.Tag is leafNodeTag)
+                            theObjectToDelete = ((leafNodeTag)tn.Tag).obj;
+
+                        if (theObjectToDelete != null)
+                        {
+                            parent.Tag.GetType().GetMethod("Remove").Invoke(parent.Tag, new object[] { theObjectToDelete });
+                            tn.Remove();
+                            setNeedsSaving();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     class leafNodeTag
     {
         public Type type { get; private set; }
         public string name { get; private set; }
+        public object obj { get; private set; }
 
-        public leafNodeTag(Type type, string name)
+        public leafNodeTag(Type type, string name, object obj)
         {
             this.type = type;
             this.name = name;
+            this.obj = obj;
         }
     }
 }
