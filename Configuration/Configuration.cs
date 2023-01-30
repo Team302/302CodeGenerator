@@ -16,6 +16,10 @@ namespace Configuration
         public List<string> robotConfigurations = new List<string>();
         public List<string> treeviewParentNameExtensions = new List<string>();
 
+        public string AllMechanisms_h = "";
+        public string AllMechanismsState_h = "";
+        public string AllMechanismsStateMgr_h = "";
+
         public string stateManager_h = "";
         public string stateManager_cpp = "";
 
