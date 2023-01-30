@@ -43,6 +43,7 @@ namespace FRCrobotCodeGen302
             this.progressTextBox = new System.Windows.Forms.TextBox();
             this.theTabControl = new System.Windows.Forms.TabControl();
             this.tabMainPage = new System.Windows.Forms.TabPage();
+            this.clearReportButton = new System.Windows.Forms.Button();
             this.tabConfigurationPage = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.robotTreeView = new System.Windows.Forms.TreeView();
@@ -54,7 +55,6 @@ namespace FRCrobotCodeGen302
             this.saveConfigBbutton = new System.Windows.Forms.Button();
             this.valueComboBox = new System.Windows.Forms.ComboBox();
             this.valueTextBox = new System.Windows.Forms.TextBox();
-            this.clearReportButton = new System.Windows.Forms.Button();
             this.configurationGroupBox.SuspendLayout();
             this.theTabControl.SuspendLayout();
             this.tabMainPage.SuspendLayout();
@@ -226,6 +226,17 @@ namespace FRCrobotCodeGen302
             this.tabMainPage.Text = "Main";
             this.tabMainPage.UseVisualStyleBackColor = true;
             // 
+            // clearReportButton
+            // 
+            this.clearReportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.clearReportButton.Location = new System.Drawing.Point(11, 404);
+            this.clearReportButton.Name = "clearReportButton";
+            this.clearReportButton.Size = new System.Drawing.Size(185, 49);
+            this.clearReportButton.TabIndex = 10;
+            this.clearReportButton.Text = "Clear report window";
+            this.clearReportButton.UseVisualStyleBackColor = true;
+            this.clearReportButton.Click += new System.EventHandler(this.clearReportButton_Click);
+            // 
             // tabConfigurationPage
             // 
             this.tabConfigurationPage.Controls.Add(this.splitContainer1);
@@ -355,16 +366,6 @@ namespace FRCrobotCodeGen302
             this.valueTextBox.TabIndex = 0;
             this.valueTextBox.Visible = false;
             this.valueTextBox.TextChanged += new System.EventHandler(this.valueTextBox_TextChanged);
-            // 
-            // clearReportButton
-            // 
-            this.clearReportButton.Location = new System.Drawing.Point(11, 404);
-            this.clearReportButton.Name = "clearReportButton";
-            this.clearReportButton.Size = new System.Drawing.Size(185, 49);
-            this.clearReportButton.TabIndex = 10;
-            this.clearReportButton.Text = "Clear report window";
-            this.clearReportButton.UseVisualStyleBackColor = true;
-            this.clearReportButton.Click += new System.EventHandler(this.clearReportButton_Click);
             // 
             // MainForm
             // 

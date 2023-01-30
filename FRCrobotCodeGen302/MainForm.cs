@@ -426,7 +426,7 @@ namespace FRCrobotCodeGen302
                             setNeedsSaving();
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         MessageBox.Show("Failed to set " + lastSelectedValueNode.Text + " to " + valueComboBox.Text);
                     }
@@ -454,7 +454,7 @@ namespace FRCrobotCodeGen302
                         lastSelectedValueNode.Text = getTreeNodeDisplayName(valueTextBox.Text, lnt.name);
                         setNeedsSaving();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         MessageBox.Show("Failed to set " + lastSelectedValueNode.Text + " to " + valueTextBox.Text);
                     }
@@ -481,7 +481,7 @@ namespace FRCrobotCodeGen302
                         lastSelectedValueNode.Text = getTreeNodeDisplayName(valueNumericUpDown.Value.ToString(), lnt.name);
                         setNeedsSaving() ;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         MessageBox.Show("Failed to set " + lastSelectedValueNode.Text + " to " + valueNumericUpDown.Text);
                     }
