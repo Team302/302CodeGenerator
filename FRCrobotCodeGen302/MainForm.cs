@@ -275,8 +275,15 @@ namespace FRCrobotCodeGen302
                     }
                     else if (value is uint)
                     {
-                        valueNumericUpDown.Visible = true;
+                        valueNumericUpDown.DecimalPlaces = 0;
                         valueNumericUpDown.Value = (uint)value;
+                        valueNumericUpDown.Visible = true;
+                    }
+                    else if (value is double)
+                    {
+                        valueNumericUpDown.DecimalPlaces = 5;
+                        valueNumericUpDown.Value = Convert.ToDecimal(value);
+                        valueNumericUpDown.Visible = true;
                     }
                     else if (lastSelectedValueNode.Text == "controlFile")
                     {
@@ -369,7 +376,10 @@ namespace FRCrobotCodeGen302
                         PropertyInfo prop = lastSelectedValueNode.Parent.Tag.GetType().GetProperty(lnt.name, BindingFlags.Public | BindingFlags.Instance);
                         if (null != prop && prop.CanWrite)
                         {
-                            prop.SetValue(lastSelectedValueNode.Parent.Tag, (uint)valueNumericUpDown.Value);
+                            if (lnt.obj is uint)
+                                prop.SetValue(lastSelectedValueNode.Parent.Tag, (uint)valueNumericUpDown.Value);
+                            else if (lnt.obj is double)
+                                prop.SetValue(lastSelectedValueNode.Parent.Tag, (double)valueNumericUpDown.Value);
                         }
 
                         setNeedsSaving() ;
