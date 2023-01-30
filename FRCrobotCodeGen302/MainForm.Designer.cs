@@ -29,6 +29,7 @@ namespace FRCrobotCodeGen302
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.configurationBrowseButton = new System.Windows.Forms.Button();
@@ -46,6 +47,7 @@ namespace FRCrobotCodeGen302
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.robotTreeView = new System.Windows.Forms.TreeView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.deleteTreeElementButton = new System.Windows.Forms.Button();
             this.addStateDataFileButton = new System.Windows.Forms.Button();
             this.addTreeElementButton = new System.Windows.Forms.Button();
             this.valueNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -264,6 +266,7 @@ namespace FRCrobotCodeGen302
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.deleteTreeElementButton);
             this.panel1.Controls.Add(this.addStateDataFileButton);
             this.panel1.Controls.Add(this.addTreeElementButton);
             this.panel1.Controls.Add(this.valueNumericUpDown);
@@ -276,10 +279,21 @@ namespace FRCrobotCodeGen302
             this.panel1.Size = new System.Drawing.Size(563, 456);
             this.panel1.TabIndex = 2;
             // 
+            // deleteTreeElementButton
+            // 
+            this.deleteTreeElementButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.deleteTreeElementButton.Location = new System.Drawing.Point(26, 156);
+            this.deleteTreeElementButton.Name = "deleteTreeElementButton";
+            this.deleteTreeElementButton.Size = new System.Drawing.Size(230, 37);
+            this.deleteTreeElementButton.TabIndex = 6;
+            this.deleteTreeElementButton.Text = "Delete";
+            this.deleteTreeElementButton.UseVisualStyleBackColor = true;
+            this.deleteTreeElementButton.Click += new System.EventHandler(this.deleteTreeElementButton_Click);
+            // 
             // addStateDataFileButton
             // 
             this.addStateDataFileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.addStateDataFileButton.Location = new System.Drawing.Point(26, 192);
+            this.addStateDataFileButton.Location = new System.Drawing.Point(26, 199);
             this.addStateDataFileButton.Name = "addStateDataFileButton";
             this.addStateDataFileButton.Size = new System.Drawing.Size(230, 37);
             this.addStateDataFileButton.TabIndex = 5;
@@ -289,7 +303,7 @@ namespace FRCrobotCodeGen302
             // 
             // addTreeElementButton
             // 
-            this.addTreeElementButton.Location = new System.Drawing.Point(26, 149);
+            this.addTreeElementButton.Location = new System.Drawing.Point(26, 113);
             this.addTreeElementButton.Name = "addTreeElementButton";
             this.addTreeElementButton.Size = new System.Drawing.Size(230, 37);
             this.addTreeElementButton.TabIndex = 4;
@@ -300,7 +314,7 @@ namespace FRCrobotCodeGen302
             // 
             // valueNumericUpDown
             // 
-            this.valueNumericUpDown.Location = new System.Drawing.Point(26, 117);
+            this.valueNumericUpDown.Location = new System.Drawing.Point(26, 81);
             this.valueNumericUpDown.Name = "valueNumericUpDown";
             this.valueNumericUpDown.Size = new System.Drawing.Size(230, 26);
             this.valueNumericUpDown.TabIndex = 3;
@@ -310,7 +324,7 @@ namespace FRCrobotCodeGen302
             // saveConfigBbutton
             // 
             this.saveConfigBbutton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveConfigBbutton.Location = new System.Drawing.Point(153, 233);
+            this.saveConfigBbutton.Location = new System.Drawing.Point(153, 242);
             this.saveConfigBbutton.Name = "saveConfigBbutton";
             this.saveConfigBbutton.Size = new System.Drawing.Size(103, 37);
             this.saveConfigBbutton.TabIndex = 2;
@@ -324,7 +338,7 @@ namespace FRCrobotCodeGen302
             | System.Windows.Forms.AnchorStyles.Right)));
             this.valueComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.valueComboBox.FormattingEnabled = true;
-            this.valueComboBox.Location = new System.Drawing.Point(26, 70);
+            this.valueComboBox.Location = new System.Drawing.Point(26, 47);
             this.valueComboBox.Name = "valueComboBox";
             this.valueComboBox.Size = new System.Drawing.Size(230, 28);
             this.valueComboBox.TabIndex = 1;
@@ -335,7 +349,7 @@ namespace FRCrobotCodeGen302
             // 
             this.valueTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.valueTextBox.Location = new System.Drawing.Point(26, 28);
+            this.valueTextBox.Location = new System.Drawing.Point(26, 15);
             this.valueTextBox.Name = "valueTextBox";
             this.valueTextBox.Size = new System.Drawing.Size(230, 26);
             this.valueTextBox.TabIndex = 0;
@@ -358,6 +372,7 @@ namespace FRCrobotCodeGen302
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(886, 495);
             this.Controls.Add(this.theTabControl);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Team 302 code generator";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -404,6 +419,7 @@ namespace FRCrobotCodeGen302
         private System.Windows.Forms.Button addStateDataFileButton;
         private System.Windows.Forms.ComboBox robotConfigurationFileComboBox;
         private System.Windows.Forms.Button clearReportButton;
+        private System.Windows.Forms.Button deleteTreeElementButton;
     }
 }
 
