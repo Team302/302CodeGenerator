@@ -31,10 +31,10 @@ namespace robotConfiguration
                 if (theRobot.chassis == null)
                     theRobot.chassis = new chassis();
 
+                mechanismControlDefinition = new Dictionary<string, statedata>();
                 if (theRobot.mechanism != null)
                 {
                     addProgress("Loading mechanism files...");
-                    mechanismControlDefinition = new Dictionary<string, statedata>();
                     foreach (mechanism mech in theRobot.mechanism)
                     {
                         if (string.IsNullOrEmpty(mech.controlFile))

@@ -14,6 +14,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Web;
 using System.Drawing;
+using System.Deployment.Application;
 
 namespace FRCrobotCodeGen302
 {
@@ -23,6 +24,7 @@ namespace FRCrobotCodeGen302
         robotConfig theRobotConfiguration = new robotConfig();
         codeGenerator_302Robotics codeGenerator = new codeGenerator_302Robotics();
         bool needsSaving = false;
+        bool loadRobotConfig = false;
 
         public MainForm()
         {
@@ -30,6 +32,8 @@ namespace FRCrobotCodeGen302
             codeGenerator.setProgressCallback(addProgress);
             theRobotConfiguration.setProgressCallback(addProgress);
             clearNeedsSaving();
+
+            this.Text += " Version " + ProductVersion;
         }
 
         private void addProgress(string info)
@@ -37,34 +41,67 @@ namespace FRCrobotCodeGen302
             progressTextBox.AppendText(info + "\r\n");
         }
 
+        private string getTreeNodeDisplayName(object parentObject, object obj, string nodeName)
+        {
+            if (isACollection(obj))
+                nodeName += "s";
+            else
+            {
+                Type objType = obj.GetType();
+                PropertyInfo[] properties = objType.GetProperties();
+
+                string nodeValueString = "";
+                if ((properties.Length == 0) || (objType.FullName == "System.String"))
+                {
+                    if(parentObject != null)
+                    {
+                        PropertyInfo prop = parentObject.GetType().GetProperty(nodeName, BindingFlags.Public | BindingFlags.Instance);
+                        object value = null;
+                        if (null != prop)
+                        {
+                            value = prop.GetValue(parentObject);
+                            nodeValueString = value.ToString();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (string s in generatorConfig.treeviewParentNameExtensions)
+                    {
+                        PropertyInfo propertyInfo = properties.ToList().Find(p => p.Name == s);
+                        if (propertyInfo != null)
+                            nodeValueString += propertyInfo.GetValue(obj) + ", ";
+                    }
+                }
+
+                nodeName = getTreeNodeDisplayName(nodeValueString, nodeName);
+            }
+
+            return nodeName;
+        }
+        private string getTreeNodeDisplayName(string nodeValueString, string nodeName)
+        {
+            nodeValueString = nodeValueString.Trim();
+            nodeValueString = nodeValueString.Trim(',');
+            nodeValueString = nodeValueString.Trim();
+
+            if (!string.IsNullOrEmpty(nodeValueString))
+                nodeName += " (" + nodeValueString + ")";
+
+            return nodeName;
+        }
+
+
         private void AddNode(TreeNode parent, object obj, string nodeName)
         {
             // add this object to the tree
-            Type objType = obj.GetType();
-            PropertyInfo thePropertyInfo = objType.GetProperties().ToList().Find(p => p.Name == "usage");
+            string extendedNodeName = getTreeNodeDisplayName(parent==null?null:parent.Tag, obj, nodeName);
 
-            if (thePropertyInfo != null)
-            {
-                nodeName += "_" + thePropertyInfo.GetValue(obj);
-            }
+            TreeNode tn;
+            if (parent == null)
+                tn = robotTreeView.Nodes.Add(extendedNodeName);
             else
-            {
-                thePropertyInfo = objType.GetProperties().ToList().Find(p => p.Name == "type");
-                if (thePropertyInfo != null)
-                {
-                  //  nodeName += "_" + thePropertyInfo.GetValue(obj);
-                }
-            }
-
-            if (isACollection(obj))
-                nodeName += "s";
-
-             TreeNode tn;
-
-            if(parent == null)
-                tn = robotTreeView.Nodes.Add(nodeName);
-            else
-                tn = parent.Nodes.Add(nodeName);
+                tn = parent.Nodes.Add(extendedNodeName);
 
             tn.Tag = obj;
 
@@ -77,7 +114,7 @@ namespace FRCrobotCodeGen302
                     int index = 0;
                     foreach (var v in ic)
                     {
-                        AddNode(tn, v, v.GetType().ToString() + index);
+                        AddNode(tn, v, v.GetType().Name + index);
 
                         index++;
                     }
@@ -85,6 +122,8 @@ namespace FRCrobotCodeGen302
             }
             else
             {
+                Type objType = obj.GetType();
+
                 PropertyInfo[] propertyInfos= objType.GetProperties();  
 
                 if( (objType.FullName != "System.String") && (propertyInfos.Length > 0) )
@@ -118,7 +157,7 @@ namespace FRCrobotCodeGen302
                 else
                 {
                     // this means that this is a leaf node
-                    leafNodeTag lnt = new leafNodeTag(obj.GetType(), nodeName);
+                    leafNodeTag lnt = new leafNodeTag(obj.GetType(), nodeName, obj);
                     tn.Tag = lnt;
                 }
             }
@@ -140,6 +179,19 @@ namespace FRCrobotCodeGen302
             try
             {
                 generatorConfig = (toolConfiguration)generatorConfig.deserialize(configurationFullPathName);
+                if(generatorConfig.robotConfigurations.Count == 0)
+                {
+                    generatorConfig.robotConfigurations = new List<string>();
+                    if(!string.IsNullOrEmpty(generatorConfig.robotConfiguration.Trim()))
+                        generatorConfig.robotConfigurations.Add(generatorConfig.robotConfiguration.Trim());
+                }
+                if(generatorConfig.treeviewParentNameExtensions.Count == 0)
+                {
+                    generatorConfig.treeviewParentNameExtensions.Add("usage");
+                    generatorConfig.treeviewParentNameExtensions.Add("type");
+                    generatorConfig.treeviewParentNameExtensions.Add("stateIdentifier");
+                    generatorConfig.treeviewParentNameExtensions.Add("identifier");
+                }
             }
             catch (Exception ex)
             {
@@ -180,30 +232,81 @@ namespace FRCrobotCodeGen302
 
         private void configurationBrowseButton_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog dlg = new OpenFileDialog())
+            try
             {
-                if (dlg.ShowDialog() == DialogResult.OK)
+                using (OpenFileDialog dlg = new OpenFileDialog())
                 {
-                    configurationFilePathNameTextBox.Text = dlg.FileName;
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        configurationFilePathNameTextBox.Text = dlg.FileName;
 
-                    addProgress("Loading the generator configuration file " + configurationFilePathNameTextBox.Text);
-                    loadGeneratorConfig(configurationFilePathNameTextBox.Text);
-                    addProgress("Configuration file loaded.");
+                        addProgress("Loading the generator configuration file " + configurationFilePathNameTextBox.Text);
+                        loadGeneratorConfig(configurationFilePathNameTextBox.Text);
+                        addProgress("Configuration file loaded.");
 
-                    generatorConfig.rootOutputFolder = Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), generatorConfig.rootOutputFolder);
-                    generatorConfig.robotConfiguration = Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), generatorConfig.robotConfiguration);
+                        loadRobotConfig = false;
+                        #region Load the Combobox with the robot configuration file list and select the first one
+                        robotConfigurationFileComboBox.Items.Clear();
+                        foreach (string f in generatorConfig.robotConfigurations)
+                        {
+                            string fullfilePath = Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), f);
+                            fullfilePath = Path.GetFullPath(fullfilePath);
+                            robotConfigurationFileComboBox.Items.Add(fullfilePath);
+                        }
+                        if (robotConfigurationFileComboBox.Items.Count > 0)
+                            robotConfigurationFileComboBox.SelectedIndex = 0;
+                        #endregion
 
-                    theRobotConfiguration.load(generatorConfig.robotConfiguration);
+                        generatorConfig.rootOutputFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), generatorConfig.rootOutputFolder));
+                        generatorConfig.robotConfiguration = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), robotConfigurationFileComboBox.Text));
+                        loadRobotConfig = true;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                addProgress("Issue encountered while loading the generator configuration file\r\n" + ex.ToString());   
+            }
 
+            robotConfigurationFileComboBox_TextChanged(null, null);
+        }
 
-                    addProgress("Populating the robot configuration tree view.");
-                    populateTree(theRobotConfiguration);
-                    addProgress("... Tree view populated.");
+        private void robotConfigurationFileComboBox_TextChanged(object sender, EventArgs e)
+        {
+            if (loadRobotConfig)
+            {
+                try
+                {
+                    generatorConfig.robotConfiguration = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configurationFilePathNameTextBox.Text), robotConfigurationFileComboBox.Text));
+
+                    try
+                    {
+                        theRobotConfiguration.load(generatorConfig.robotConfiguration);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Issue encountered while loading the robot configuration file\r\n" + ex.ToString());
+                    }
+
+                    try
+                    {
+                        addProgress("Populating the robot configuration tree view.");
+                        populateTree(theRobotConfiguration);
+                        addProgress("... Tree view populated.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Issue encountered while populating the robot configuration tree view\r\n" + ex.ToString());
+                    }
 
                     configuredOutputFolderLabel.Text = generatorConfig.rootOutputFolder;
-                    robotConfigurationFileLabel.Text = generatorConfig.robotConfiguration;
 
+                    deleteTreeElementButton.Enabled = false;
                     clearNeedsSaving();
+                }
+                catch (Exception ex)
+                {
+                    addProgress(ex.ToString());
                 }
             }
         }
@@ -231,11 +334,12 @@ namespace FRCrobotCodeGen302
             addTreeElementButton.Visible = false;
 
             lastSelectedArrayNode = null;
-            lastSelectedValueNode= null;    
+            lastSelectedValueNode= null;
+
+            deleteTreeElementButton.Enabled = isDeletable(e.Node);
 
             if (e.Node.Tag != null)
-            {
-
+            {   
                 if (isACollection( e.Node.Tag))
                 {
                     lastSelectedArrayNode = e.Node;
@@ -273,8 +377,15 @@ namespace FRCrobotCodeGen302
                     }
                     else if (value is uint)
                     {
-                        valueNumericUpDown.Visible = true;
+                        valueNumericUpDown.DecimalPlaces = 0;
                         valueNumericUpDown.Value = (uint)value;
+                        valueNumericUpDown.Visible = true;
+                    }
+                    else if (value is double)
+                    {
+                        valueNumericUpDown.DecimalPlaces = 5;
+                        valueNumericUpDown.Value = Convert.ToDecimal(value);
+                        valueNumericUpDown.Visible = true;
                     }
                     else if (lastSelectedValueNode.Text == "controlFile")
                     {
@@ -299,6 +410,7 @@ namespace FRCrobotCodeGen302
             }
         }
 
+        #region handle the events when values are changed
         private void valueComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
             if (enableCallback)
@@ -312,15 +424,19 @@ namespace FRCrobotCodeGen302
                         PropertyInfo prop = lastSelectedValueNode.Parent.Tag.GetType().GetProperty(lnt.name, BindingFlags.Public | BindingFlags.Instance);
                         if (null != prop && prop.CanWrite)
                         {
-                            if( lastSelectedValueNode.Text == "controlFile")
+                            if (lastSelectedValueNode.Text == "controlFile")
                                 prop.SetValue(lastSelectedValueNode.Parent.Tag, valueComboBox.Text);
                             else
+                            {
                                 prop.SetValue(lastSelectedValueNode.Parent.Tag, Enum.Parse(lnt.type, valueComboBox.Text));
+                                lastSelectedValueNode.Parent.Text = getTreeNodeDisplayName(null, lastSelectedValueNode.Parent.Tag, lastSelectedValueNode.Parent.Tag.GetType().Name);
+                            }
 
+                            lastSelectedValueNode.Text = getTreeNodeDisplayName(valueComboBox.Text, lnt.name);
                             setNeedsSaving();
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         MessageBox.Show("Failed to set " + lastSelectedValueNode.Text + " to " + valueComboBox.Text);
                     }
@@ -344,9 +460,11 @@ namespace FRCrobotCodeGen302
                         {
                             prop.SetValue(lastSelectedValueNode.Parent.Tag, valueTextBox.Text);
                         }
+
+                        lastSelectedValueNode.Text = getTreeNodeDisplayName(valueTextBox.Text, lnt.name);
                         setNeedsSaving();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         MessageBox.Show("Failed to set " + lastSelectedValueNode.Text + " to " + valueTextBox.Text);
                     }
@@ -367,19 +485,23 @@ namespace FRCrobotCodeGen302
                         PropertyInfo prop = lastSelectedValueNode.Parent.Tag.GetType().GetProperty(lnt.name, BindingFlags.Public | BindingFlags.Instance);
                         if (null != prop && prop.CanWrite)
                         {
-                            prop.SetValue(lastSelectedValueNode.Parent.Tag, (uint)valueNumericUpDown.Value);
+                            if (lnt.obj is uint)
+                                prop.SetValue(lastSelectedValueNode.Parent.Tag, (uint)valueNumericUpDown.Value);
+                            else if (lnt.obj is double)
+                                prop.SetValue(lastSelectedValueNode.Parent.Tag, (double)valueNumericUpDown.Value);
                         }
 
+                        lastSelectedValueNode.Text = getTreeNodeDisplayName(valueNumericUpDown.Value.ToString(), lnt.name);
                         setNeedsSaving() ;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         MessageBox.Show("Failed to set " + lastSelectedValueNode.Text + " to " + valueNumericUpDown.Text);
                     }
                 }
             }
         }
-
+        #endregion
         private void saveConfigBbutton_Click(object sender, EventArgs e)
         {
             try
@@ -488,17 +610,61 @@ namespace FRCrobotCodeGen302
                 }
             }
         }
+
+        private void clearReportButton_Click(object sender, EventArgs e)
+        {
+            progressTextBox.Clear();
+        }
+        private bool isDeletable(TreeNode tn)
+        {
+            TreeNode parent = tn.Parent;
+            if (parent != null)
+            {
+                if(parent.Tag != null)
+                    return isACollection(parent.Tag);
+            }
+            return false;
+        }
+        private void deleteTreeElementButton_Click(object sender, EventArgs e)
+        {
+            // The delete button will be disabled if the highlighted tree item cannot be deleted
+            // Only a member of a collection can be deleted
+            TreeNode tn = robotTreeView.SelectedNode;
+            if(isDeletable(tn))
+            {
+                TreeNode parent = tn.Parent;
+                if (parent != null)
+                {
+                    if( (parent.Tag != null) && (tn.Tag != null) )
+                    {
+
+                        object theObjectToDelete = tn.Tag;
+                        if (tn.Tag is leafNodeTag)
+                            theObjectToDelete = ((leafNodeTag)tn.Tag).obj;
+
+                        if (theObjectToDelete != null)
+                        {
+                            parent.Tag.GetType().GetMethod("Remove").Invoke(parent.Tag, new object[] { theObjectToDelete });
+                            tn.Remove();
+                            setNeedsSaving();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     class leafNodeTag
     {
         public Type type { get; private set; }
         public string name { get; private set; }
+        public object obj { get; private set; }
 
-        public leafNodeTag(Type type, string name)
+        public leafNodeTag(Type type, string name, object obj)
         {
             this.type = type;
             this.name = name;
+            this.obj = obj;
         }
     }
 }
