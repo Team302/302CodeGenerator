@@ -14,6 +14,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Web;
 using System.Drawing;
+using System.Deployment.Application;
 
 namespace FRCrobotCodeGen302
 {
@@ -31,6 +32,8 @@ namespace FRCrobotCodeGen302
             codeGenerator.setProgressCallback(addProgress);
             theRobotConfiguration.setProgressCallback(addProgress);
             clearNeedsSaving();
+
+            this.Text += " Version " + ProductVersion;
         }
 
         private void addProgress(string info)
