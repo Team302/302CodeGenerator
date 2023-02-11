@@ -1,5 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns="http://tempuri.org/robot" elementFormDefault="qualified" targetNamespace="http://tempuri.org/robot" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:attribute name="canId">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedInt">
+        <xs:minInclusive value="0"/>
+        <xs:maxInclusive value="10"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
   <xs:element name="robot">
     <xs:complexType>
       <xs:sequence>
@@ -42,7 +50,7 @@
   </xs:element>
   <xs:element name="pdp">
     <xs:complexType>
-      <xs:attribute default="0" name="canId" type="xs:unsignedInt">
+      <xs:attribute ref="canId" default="0">
       </xs:attribute>
       <xs:attribute default="CTRE" name="type">
         <xs:simpleType>

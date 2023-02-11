@@ -224,8 +224,13 @@ namespace Robot
         [System.Xml.Serialization.XmlIgnoreAttribute()]
         private uint _canId = 0u;
         
+        /// <summary>
+        /// <para xml:lang="en">Minimum inclusive value: 0.</para>
+        /// <para xml:lang="en">Maximum inclusive value: 10.</para>
+        /// </summary>
         //[System.ComponentModel.DefaultValueAttribute(0u)]
-        [System.Xml.Serialization.XmlAttributeAttribute("canId")]
+        [System.ComponentModel.DataAnnotations.RangeAttribute(typeof(uint), "0", "10")]
+        [System.Xml.Serialization.XmlAttributeAttribute("canId", Namespace="http://tempuri.org/robot", Form=System.Xml.Schema.XmlSchemaForm.Qualified)]
         public uint canId
         {
             get

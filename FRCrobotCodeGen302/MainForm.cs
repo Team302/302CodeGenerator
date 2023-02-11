@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using System.Web;
 using System.Drawing;
 using System.Deployment.Application;
+using System.ComponentModel.DataAnnotations;
 
 namespace FRCrobotCodeGen302
 {
@@ -377,9 +378,14 @@ namespace FRCrobotCodeGen302
                     }
                     else if (value is uint)
                     {
+                        CustomAttributeData cad = prop.CustomAttributes.ToList().Find(a => a.AttributeType.Name == "RangeAttribute");
+                        valueNumericUpDown.Minimum = Convert.ToUInt32(cad.ConstructorArguments[1].Value);
+                        valueNumericUpDown.Maximum = Convert.ToUInt32(cad.ConstructorArguments[2].Value);
+                        
                         valueNumericUpDown.DecimalPlaces = 0;
                         valueNumericUpDown.Value = (uint)value;
                         valueNumericUpDown.Visible = true;
+
                     }
                     else if (value is double)
                     {
@@ -486,9 +492,20 @@ namespace FRCrobotCodeGen302
                         if (null != prop && prop.CanWrite)
                         {
                             if (lnt.obj is uint)
+                            {
                                 prop.SetValue(lastSelectedValueNode.Parent.Tag, (uint)valueNumericUpDown.Value);
+                            }
                             else if (lnt.obj is double)
                                 prop.SetValue(lastSelectedValueNode.Parent.Tag, (double)valueNumericUpDown.Value);
+
+                            //ValidationContext context = new ValidationContext(lnt.obj, null, null);
+                            //IList<ValidationResult> errors = new List<ValidationResult>();
+
+                            //if (!Validator.TryValidateObject(lnt.obj, context, errors, true))
+                            //{
+                            //    foreach (ValidationResult result in errors)
+                            //        MessageBox.Show(result.ErrorMessage);
+                            //}
                         }
 
                         lastSelectedValueNode.Text = getTreeNodeDisplayName(valueNumericUpDown.Value.ToString(), lnt.name);
