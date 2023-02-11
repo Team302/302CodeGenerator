@@ -2308,6 +2308,23 @@ namespace Robot
                 _reversed = value;
             }
         }
+        
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private solenoidtype _type = Robot.solenoidtype.REVPH;
+        
+        //[System.ComponentModel.DefaultValueAttribute(Robot.solenoidtype.REVPH)]
+        [System.Xml.Serialization.XmlAttributeAttribute("type")]
+        public solenoidtype type
+        {
+            get
+            {
+                return _type;
+            }
+            set
+            {
+                _type = value;
+            }
+        }
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
@@ -2352,6 +2369,17 @@ namespace Robot
         
         [System.Xml.Serialization.XmlEnumAttribute("false")]
         Item_false,
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
+    [System.SerializableAttribute()]
+    //[System.Xml.Serialization.XmlTypeAttribute("solenoidtype", Namespace="http://tempuri.org/robot", AnonymousType=true)]
+    public enum solenoidtype
+    {
+        
+        CTREPCM,
+        
+        REVPH,
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.732.0")]
