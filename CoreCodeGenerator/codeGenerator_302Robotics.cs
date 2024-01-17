@@ -50,7 +50,7 @@ namespace CoreCodeGenerator
                 statedata sd = theRobotConfiguration.mechanismControlDefinition[mech.controlFile];
 
                 List<string> genFiles = writeMechanismFiles(rootFolder, generatorConfig, mech, sd);
-                if(genFiles.Count == 3)
+                if (genFiles.Count == 3)
                 {
                     //the order needs to be the same as in writeMechanismFiles
                     mechMainFiles.Add(genFiles[0].Substring(rootFolder.Length).TrimStart('\\'));
@@ -93,7 +93,7 @@ namespace CoreCodeGenerator
             writeStateStrucFiles(mechanismFolder, generatorConfig);
         }
 
-    
+
 
         private void writeUsagesFiles(string baseFolder, toolConfiguration generatorConfig)
         {
@@ -185,7 +185,7 @@ namespace CoreCodeGenerator
             string baseFileName = Path.Combine(baseFolder, "MechanismTypes");
             string fullPathFilename_h = baseFileName + ".h";
             string fullPathFilename_cpp = baseFileName + ".cpp";
-           
+
 
             writeMechanismTypes_h_File(fullPathFilename_h, generatorConfig.MechanismTypes_h, generatorConfig);
             writeMechanismTypes_cpp_File(fullPathFilename_cpp, generatorConfig.MechanismTypes_cpp, generatorConfig);
@@ -212,7 +212,7 @@ namespace CoreCodeGenerator
             addProgress("Generating " + fullPathFilename);
 
             StringBuilder sb = prepareFile(fullPathFilename, template, generatorConfig);
-            
+
             StringBuilder enumContentsStr = new StringBuilder();
             StringBuilder XmlStringToStateEnumMapStr = new StringBuilder();
             StringBuilder stateStructStr = new StringBuilder();
@@ -233,7 +233,7 @@ namespace CoreCodeGenerator
             sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeStateMgr_cpp_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
@@ -254,7 +254,7 @@ namespace CoreCodeGenerator
             sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeState_h_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
@@ -290,7 +290,7 @@ namespace CoreCodeGenerator
             sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeState_cpp_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
@@ -318,7 +318,7 @@ namespace CoreCodeGenerator
             sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeMain_cpp_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
@@ -346,7 +346,7 @@ namespace CoreCodeGenerator
             sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeMain_h_File(string fullPathFilename, string template, mechanism mech, toolConfiguration generatorConfig, statedata mechanismStateData, List<string> states, List<string> stateText)
@@ -382,7 +382,7 @@ namespace CoreCodeGenerator
             sb = sb.Replace("$MECHANISM_NAME$", FirstCharSubstring(getMechanismName(mech.controlFile)));
             sb = sb.Replace("$MECHANISM_NAME_UPPERCASE$", getMechanismName(mech.controlFile).ToUpper());
             sb = sb.Replace("$MECHANISM_NAME_LOWERCASE$", getMechanismName(mech.controlFile).ToLower());
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeMechanismTypes_h_File(string fullPathFilename, string template, toolConfiguration generatorConfig)
@@ -400,7 +400,7 @@ namespace CoreCodeGenerator
                 enumContentsStr.AppendLine(mechanmismName + ",");
             }
             sb = sb.Replace("$COMMA_SEPARATED_MECHANISM_NAMES$", enumContentsStr.ToString());
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeMechanismTypes_cpp_File(string fullPathFilename, string template, toolConfiguration generatorConfig)
@@ -419,7 +419,7 @@ namespace CoreCodeGenerator
 
             sb = sb.Replace("$MECHANISM_NAMES_MAPPED_TO_ENUMS$", XmlStringToEnumMapStr.ToString());
 
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeStateStruc_h_File(string fullPathFilename, string template, toolConfiguration generatorConfig)
@@ -433,10 +433,10 @@ namespace CoreCodeGenerator
             {
                 stateStructStr.AppendLine(getMechanismName(m.controlFile) + "_STATE,");
             }
-            
+
             sb = sb.Replace("$STATE_STRUCT$", stateStructStr.ToString().ToUpper());
 
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeMechanisms_h_File(string fullPathFilename, string template, toolConfiguration generatorConfig, List<string> hFilesToInclude)
@@ -454,13 +454,14 @@ namespace CoreCodeGenerator
                 contentsStr.AppendLine("#include <" + mechanmismFile + ".h>");
             }
             sb = sb.Replace("$INCLUDES_FOR_ALL_MECHANISMS$", contentsStr.ToString());
-            File.WriteAllText(fullPathFilename, sb.ToString());
+
+            writeToFile(sb, fullPathFilename);
         }
 
         #endregion
 
         #region Usage files
-        private void writeXXXUsageFiles(string baseFolder, string template_h, string template_cpp, string filenameWithoutExtension, toolConfiguration generatorConfig,Type objectType, string usageName)
+        private void writeXXXUsageFiles(string baseFolder, string template_h, string template_cpp, string filenameWithoutExtension, toolConfiguration generatorConfig, Type objectType, string usageName)
         {
             string baseFileName = Path.Combine(baseFolder, filenameWithoutExtension);
             string fullPathFilename_h = baseFileName + ".h";
@@ -480,7 +481,7 @@ namespace CoreCodeGenerator
 
             sb = sb.Replace("$USAGE_ENUM_COMMA_SEPARATED$", enumContentsStr.TrimStart(new char[] { ',', '\r', '\n' }));
 
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         private void writeXXXUsage_cpp_File(string fullPathFilename, string template, toolConfiguration generatorConfig, Type objectType, string usageName)
@@ -494,7 +495,7 @@ namespace CoreCodeGenerator
 
             sb = sb.Replace("$USAGE_TEXT_TO_ENUM_MAP$", contentsStr);
 
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
 
@@ -508,12 +509,20 @@ namespace CoreCodeGenerator
 
             sb = sb.Replace("$CHASSIS_TYPE_CONFIG$", chassistype);
 
-            File.WriteAllText(fullPathFilename, sb.ToString());
+            writeToFile(sb, fullPathFilename);
         }
 
         #endregion
 
         #region Helper functions
+
+        private void writeToFile(StringBuilder sb, string fullPathFilename)
+        {
+            string s = sb.ToString().Replace("\r\n", "\n");
+            s = s.Replace("\r", "");
+            s = s.Replace("\n", "\r\n");
+            File.WriteAllText(fullPathFilename, s);
+        }
         private string FirstCharSubstring(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -559,7 +568,7 @@ namespace CoreCodeGenerator
 
             Type objType = obj.GetType();
 
-            if(obj.GetType() == objectType)
+            if (obj.GetType() == objectType)
             {
                 count++;
             }
@@ -618,7 +627,7 @@ namespace CoreCodeGenerator
                 {
                     usageName = thePropertyInfo.GetValue(obj).ToString();
                 }
-                
+
                 usages.Add(usageName);
             }
 
@@ -766,7 +775,7 @@ namespace CoreCodeGenerator
             sb.AppendLine(generatorConfig.CopyrightNotice.Trim());
             sb.AppendLine(generatorConfig.GenerationNotice.Trim());
             sb.AppendLine(updatedFileContents);
-           
+
 
             return sb;
         }
